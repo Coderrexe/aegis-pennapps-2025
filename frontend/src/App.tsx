@@ -53,11 +53,11 @@ function App() {
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',
-            width: '80%',
-            height: '80%',
+            width: '83%',
+            height: '83%',
             position: 'absolute',
-            top: '10%',
-            left: '10%',
+            top: '8.5%',
+            left: '7.75%',
             display: videoEnded ? 'block' : 'none'
           }}
         />
@@ -68,13 +68,10 @@ function App() {
       <nav className="navbar">
         <div className="nav-container">
           <div className="nav-logo">
-            <h2>YourApp</h2>
+            <h2>Aegis</h2>
           </div>
           <div className="nav-menu">
-            <a href="#home" className="nav-link">Home</a>
-            <a href="#features" className="nav-link">Features</a>
-            <a href="#about" className="nav-link">About</a>
-            <a href="#contact" className="nav-link">Contact</a>
+            <a href="/navigate" className="nav-link">Navigate</a>
           </div>
         </div>
       </nav>
@@ -89,7 +86,6 @@ function App() {
             <p className="hero-description">
               An adaptive navigation driven by <br /> 
               real-time data optimized for your safety.
-
             </p>
             <div className="hero-buttons">
               <button className="btn btn-primary">Get Started</button>
@@ -158,7 +154,7 @@ function App() {
         <div className="container">
           <div className="footer-content">
             <div className="footer-section">
-              <h3>YourApp</h3>
+              <h3>Aegis</h3>
               <p>Building the future, one innovation at a time.</p>
             </div>
             <div className="footer-section">
@@ -181,7 +177,7 @@ function App() {
             </div>
           </div>
           <div className="footer-bottom">
-            <p>&copy; 2024 YourApp. All rights reserved.</p>
+            <p>&copy; 2024 Aegis. All rights reserved.</p>
           </div>
         </div>
       </footer>
