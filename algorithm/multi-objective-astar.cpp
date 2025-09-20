@@ -292,7 +292,7 @@ int main() {
 
     vector<double> light = {1, 1, 1, 0.5, 1, 0.2};
     vector<int> crime = {0, 1, 0, 0, 0, 0};
-
+    
     vector<vector<int>> input = {
         {0, 3, 3},
         {2, 3, 5},
@@ -301,7 +301,10 @@ int main() {
         {5, 4, 1},
         {2, 4, 1}
     };
+
+    // ! Source and Target -- change as needed
     int s = 0, t = 4;
+
     solve(N, M, light, crime, input, s, t);
     return 0;
 }
