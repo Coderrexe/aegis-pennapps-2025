@@ -1,25 +1,29 @@
-import { useState } from 'react'
-import './App.css'
-
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
+    <div className="min-h-screen min-w-screen bg-[var(--base)] text-[var(--neutral)] flex flex-col items-center justify-center p-6">
+      <h1 className="text-[var(--accent)] text-4xl font-bold mb-8">
+        aegis
+      </h1>
+
+      <div className="flex gap-4">
+        <div className="w-24 h-24 bg-[var(--primary)] rounded-lg flex items-center justify-center">
+          <span className="text-[var(--neutral)] text-sm">Primary</span>
+        </div>
+        <div className="w-24 h-24 bg-[var(--secondary)] rounded-lg flex items-center justify-center">
+          <span className="text-[var(--neutral)] text-sm">Secondary</span>
+        </div>
+        <div className="w-24 h-24 bg-[var(--accent)] rounded-lg flex items-center justify-center">
+          <span className="text-[var(--base)] text-sm">Accent</span>
+        </div>
+        <div className="w-24 h-24 bg-[var(--neutral)] rounded-lg flex items-center justify-center">
+          <span className="text-[var(--base)] text-sm">Neutral</span>
+        </div>
+        <div className="w-24 h-24 bg-[var(--base)] rounded-lg flex items-center justify-center border border-[var(--neutral)]">
+          <span className="text-[var(--neutral)] text-sm">Base</span>
+        </div>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    </div>
+  );
 }
 
-export default App
+export default App;
