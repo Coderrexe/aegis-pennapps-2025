@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import "./index.css";
 import App from "./App.tsx";
 import Navigate from "./pages/Navigate.tsx";
+import About from "./pages/About.tsx";
 
 const root = document.getElementById("root")!;
 
@@ -13,6 +14,7 @@ createRoot(root).render(
       <Routes>
         <Route path="/" element={<App />} />
         <Route path="/navigate" element={<Navigate />} />
+        <Route path="/about" element={<About />} />
       </Routes>
     </Router>
   </StrictMode>
