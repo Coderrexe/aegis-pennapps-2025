@@ -1,0 +1,18 @@
+{
+  "name": "pennapps-2025",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "concurrently --names \"BACKEND,FRONTEND\" --prefix-colors \"blue,green\" \"npm:start:backend\" \"npm:start:frontend\"",
+    "start:backend": "cd backend && ./venv/bin/uvicorn main:app --host 0.0.0.0 --port 8000 --reload --use-colors",
+    "start:frontend": "npm run dev --prefix frontend",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}

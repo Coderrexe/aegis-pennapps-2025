@@ -68,13 +68,10 @@ function App() {
       <nav className="navbar">
         <div className="nav-container">
           <div className="nav-logo">
-            <h2>YourApp</h2>
+            <h2>Aegis</h2>
           </div>
           <div className="nav-menu">
-            <a href="#home" className="nav-link">Home</a>
-            <a href="#features" className="nav-link">Features</a>
-            <a href="#about" className="nav-link">About</a>
-            <a href="#contact" className="nav-link">Contact</a>
+            <a href="/navigate" className="nav-link">Navigate</a>
           </div>
         </div>
       </nav>
@@ -157,7 +154,7 @@ function App() {
         <div className="container">
           <div className="footer-content">
             <div className="footer-section">
-              <h3>YourApp</h3>
+              <h3>Aegis</h3>
               <p>Building the future, one innovation at a time.</p>
             </div>
             <div className="footer-section">
@@ -180,7 +177,7 @@ function App() {
             </div>
           </div>
           <div className="footer-bottom">
-            <p>&copy; 2024 YourApp. All rights reserved.</p>
+            <p>&copy; 2024 Aegis. All rights reserved.</p>
           </div>
         </div>
       </footer>
