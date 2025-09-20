@@ -74,6 +74,10 @@ const Navigate: React.FC = () => {
   const [remainingTime, setRemainingTime] = useState<string>('');
   const [navigationSteps, setNavigationSteps] = useState<google.maps.DirectionsStep[]>([]);
   
+  // Route preferences
+  type RoutePreference = 'fastest' | 'lighting' | 'balanced';
+  const [routePreference, setRoutePreference] = useState<RoutePreference>('balanced');
+  
   const startAutocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
   const endAutocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
 
@@ -138,6 +142,7 @@ const Navigate: React.FC = () => {
     console.log('🚗 Starting route calculation...');
     console.log('📍 From:', startLocation);
     console.log('📍 To:', endLocation);
+    console.log('🎯 Route preference:', routePreference);
 
     try {
       const directionsService = new google.maps.DirectionsService();
@@ -185,6 +190,9 @@ const Navigate: React.FC = () => {
       const steps = leg.steps || [];
       setNavigationSteps(steps);
       console.log('🧭 Navigation steps extracted:', steps.length, 'steps');
+      
+      // Apply route preference algorithm (placeholder for future implementation)
+      applyRoutePreferenceAlgorithm(result, routePreference);
 
       // Fit the map to show the entire route
       if (map && route.bounds) {
@@ -373,6 +381,45 @@ const Navigate: React.FC = () => {
     
     const bearing = Math.atan2(y, x) * 180 / Math.PI;
     return (bearing + 360) % 360;
+  };
+
+  // Route preference algorithm (placeholder for future safety data integration)
+  const applyRoutePreferenceAlgorithm = (directionsResult: google.maps.DirectionsResult, preference: RoutePreference) => {
+    console.log('🔬 Applying route preference algorithm:', preference);
+    
+    switch (preference) {
+      case 'fastest':
+        console.log('⚡ Using fastest route algorithm');
+        console.log('   - Prioritizing shortest distance and time');
+        console.log('   - Minimal safety considerations');
+        // TODO: Implement fastest route optimization
+        break;
+        
+      case 'lighting':
+        console.log('💡 Using most lighting algorithm');
+        console.log('   - Prioritizing well-lit streets');
+        console.log('   - Integrating street lighting data');
+        console.log('   - Avoiding dark areas even if longer');
+        // TODO: Implement lighting-based route optimization
+        // - Integrate NASA VIIRS nighttime lights data
+        // - Use street lighting databases
+        // - Weight routes by illumination levels
+        break;
+        
+      case 'balanced':
+        console.log('⚖️ Using balanced algorithm (default)');
+        console.log('   - Balancing speed and safety');
+        console.log('   - Moderate lighting considerations');
+        console.log('   - Crime data integration');
+        // TODO: Implement balanced route optimization
+        // - Weight crime data (40%) + lighting (30%) + speed (30%)
+        // - Use machine learning for optimal balance
+        break;
+    }
+    
+    // Placeholder for future algorithm implementation
+    console.log('🚧 Algorithm placeholder - ready for safety data integration');
+    return directionsResult;
   };
 
   // Demo mode for testing on laptops (simulates heading changes)
@@ -695,6 +742,79 @@ const Navigate: React.FC = () => {
               <div className="text-center p-2 bg-green-50 rounded-lg">
                 <div className="text-lg font-bold text-green-600">{routeInfo.duration}</div>
                 <div className="text-xs text-gray-600">Walking Time</div>
+              </div>
+            </div>
+
+            {/* Route Preference Selector */}
+            <div className="mb-4">
+              <div className="flex items-center space-x-2 mb-2">
+                <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                </svg>
+                <span className="text-sm font-medium text-gray-700">Safety Preference</span>
+              </div>
+              
+              <div className="grid grid-cols-3 gap-2">
+                <button
+                  onClick={() => setRoutePreference('fastest')}
+                  className={`p-2 rounded-lg text-xs font-medium transition-all duration-200 ${
+                    routePreference === 'fastest'
+                      ? 'bg-blue-600 text-white shadow-md'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  <div className="flex flex-col items-center space-y-1">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                    <span>Fastest</span>
+                  </div>
+                </button>
+                
+                <button
+                  onClick={() => setRoutePreference('balanced')}
+                  className={`p-2 rounded-lg text-xs font-medium transition-all duration-200 ${
+                    routePreference === 'balanced'
+                      ? 'bg-green-600 text-white shadow-md'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  <div className="flex flex-col items-center space-y-1">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                    <span>Balanced</span>
+                  </div>
+                </button>
+                
+                <button
+                  onClick={() => setRoutePreference('lighting')}
+                  className={`p-2 rounded-lg text-xs font-medium transition-all duration-200 ${
+                    routePreference === 'lighting'
+                      ? 'bg-yellow-600 text-white shadow-md'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  <div className="flex flex-col items-center space-y-1">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                    </svg>
+                    <span>Most Lighting</span>
+                  </div>
+                </button>
+              </div>
+              
+              {/* Preference Description */}
+              <div className="mt-2 p-2 bg-gray-50 rounded text-xs text-gray-600">
+                {routePreference === 'fastest' && (
+                  <span>🚀 Prioritizes speed and shortest distance</span>
+                )}
+                {routePreference === 'balanced' && (
+                  <span>⚖️ Balances safety and efficiency (Recommended)</span>
+                )}
+                {routePreference === 'lighting' && (
+                  <span>💡 Prioritizes well-lit areas and safety</span>
+                )}
               </div>
             </div>
 
