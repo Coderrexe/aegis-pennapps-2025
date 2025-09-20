@@ -14,6 +14,8 @@ interface SearchPanelProps {
   onSearch: () => void;
   onUseCurrentLocation: () => void;
   isLoaded: boolean;
+  hasCurrentLocation?: boolean;
+  isCalculatingRoute?: boolean;
 }
 
 export const SearchPanel: React.FC<SearchPanelProps> = ({
@@ -29,6 +31,8 @@ export const SearchPanel: React.FC<SearchPanelProps> = ({
   onSearch,
   onUseCurrentLocation,
   isLoaded,
+  hasCurrentLocation = false,
+  isCalculatingRoute = false,
 }) => {
   if (!isOpen) return null;
 
@@ -89,10 +93,13 @@ export const SearchPanel: React.FC<SearchPanelProps> = ({
           {/* Search Button */}
           <button
             onClick={onSearch}
-            disabled={!startLocation || !endLocation}
-            className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white py-3 px-4 rounded-lg font-medium transition-colors shadow-md"
+            disabled={!startLocation || !endLocation || isCalculatingRoute}
+            className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white py-3 px-4 rounded-lg font-medium transition-colors shadow-md flex items-center justify-center space-x-2"
           >
-            Find Safe Route
+            {isCalculatingRoute && (
+              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+            )}
+            <span>{isCalculatingRoute ? 'Calculating Route...' : 'Find Safe Route'}</span>
           </button>
 
           {/* Quick Actions */}
@@ -101,9 +108,19 @@ export const SearchPanel: React.FC<SearchPanelProps> = ({
             <div className="flex flex-wrap gap-2">
               <button 
                 onClick={onUseCurrentLocation}
-                className="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded-full transition-colors"
+                disabled={!hasCurrentLocation}
+                className={`text-xs px-3 py-1 rounded-full transition-colors flex items-center space-x-1 ${
+                  hasCurrentLocation 
+                    ? 'bg-blue-100 hover:bg-blue-200 text-blue-700 hover:shadow-sm' 
+                    : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                }`}
+                title={hasCurrentLocation ? 'Fill start location with your current address' : 'Location not available'}
               >
-                Use current location
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                <span>Use current location</span>
               </button>
               <button className="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded-full transition-colors">
                 Recent searches
