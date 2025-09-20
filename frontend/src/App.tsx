@@ -1,8 +1,69 @@
 import './App.css'
+import { useRef, useEffect, useState } from 'react'
 
 function App() {
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const [videoEnded, setVideoEnded] = useState(false)
+
+  useEffect(() => {
+    const video = videoRef.current
+    if (video) {
+      // Set playback rate to double speed
+      video.playbackRate = 2.0
+      
+      // Handle video end event
+      const handleVideoEnd = () => {
+        // Keep the video on the last frame by pausing it
+        video.pause()
+        // Remove the loop attribute so it doesn't restart
+        video.removeAttribute('loop')
+        // Switch to p6.png background
+        setVideoEnded(true)
+      }
+      
+      video.addEventListener('ended', handleVideoEnd)
+      
+      return () => {
+        video.removeEventListener('ended', handleVideoEnd)
+      }
+    }
+  }, [])
+
   return (
     <div className="app">
+      {/* Full-screen Background */}
+      <div className="video-background">
+        <video 
+          ref={videoRef}
+          className="background-video" 
+          autoPlay 
+          muted 
+          playsInline
+          poster="/favicon/favicon-512x512.png"
+          style={{ display: videoEnded ? 'none' : 'block' }}
+        >
+          <source src="/favicon/animation.mov" type="video/quicktime" />
+          <source src="/favicon/animation.mov" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+        <div 
+          className="background-image"
+          style={{
+            backgroundImage: 'url(/favicon/p6.png)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+            width: '83%',
+            height: '83%',
+            position: 'absolute',
+            top: '8.5%',
+            left: '7.75%',
+            display: videoEnded ? 'block' : 'none'
+          }}
+        />
+        <div className="video-overlay-dark"></div>
+      </div>
+
       {/* Navigation */}
       <nav className="navbar">
         <div className="nav-container">
@@ -20,33 +81,18 @@ function App() {
 
       {/* Hero Section */}
       <section id="home" className="hero">
-        <div className="hero-container">
+        <div className={`hero-container ${videoEnded ? 'fade-in' : ''}`}>
           <div className="hero-content">
             <h1 className="hero-title">
-              Welcome to the Future of
-              <span className="gradient-text"> Innovation</span>
+              Aegis
             </h1>
             <p className="hero-description">
-              Experience cutting-edge technology that transforms the way you work, 
-              create, and connect. Built with modern tools and designed for tomorrow.
+              An adaptive navigation driven by <br /> 
+              real-time data optimized for your safety.
+
             </p>
             <div className="hero-buttons">
               <button className="btn btn-primary">Get Started</button>
-              <button className="btn btn-secondary">Learn More</button>
-            </div>
-          </div>
-          <div className="hero-visual">
-            <div className="floating-card card-1">
-              <div className="card-icon">⚡</div>
-              <h3>Fast</h3>
-            </div>
-            <div className="floating-card card-2">
-              <div className="card-icon">🔒</div>
-              <h3>Secure</h3>
-            </div>
-            <div className="floating-card card-3">
-              <div className="card-icon">🚀</div>
-              <h3>Scalable</h3>
             </div>
           </div>
         </div>
