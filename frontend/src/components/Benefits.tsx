@@ -54,7 +54,7 @@ const Benefits: React.FC<BenefitsProps> = ({ cardOpacity, cardTransform }) => {
           <div className="border border-[var(--neutral)]/20 p-8 hover:border-[var(--neutral)]/40 transition-all duration-300">
             <div className="mb-6">
               <div className="w-8 h-8 border border-[var(--neutral)]/40 rounded-full flex items-center justify-center mb-4">
-                ⬢
+              🔩
               </div>
               <h3 className="text-2xl font-light mb-3">Execution</h3>
               <p className="text-[var(--neutral)]/70 leading-relaxed">
