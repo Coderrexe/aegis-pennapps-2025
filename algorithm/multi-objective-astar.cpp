@@ -1,3 +1,4 @@
+#include "multi-objective-astar.hpp"
 #include <iostream>
 #include <vector>
 #include <queue>
@@ -26,18 +27,11 @@ struct PQItem {
     double f_time;
     double f_dark;
     int node;
-    int label_idx; 
+    int label_idx;
     bool operator<(const PQItem& o) const {
-        if (f_time != o.f_time) return f_time > o.f_time; 
+        if (f_time != o.f_time) return f_time > o.f_time;
         return f_dark > o.f_dark;
     }
-};
-
-struct Path { 
-    string name; 
-    int idx; 
-    vector<int> path; 
-    double time, dark; 
 };
 
 
@@ -282,26 +276,4 @@ vector<Path> solve(int N, int M, const vector<double>& light, const vector<int>&
     return picks;
  }
 
-int main() {
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
-    
-    // Random Test Case
-
-    int N = 6, M = 6;
-
-    vector<double> light = {1, 1, 1, 0.5, 1, 0.2};
-    vector<int> crime = {0, 1, 0, 0, 0, 0};
-
-    vector<vector<int>> input = {
-        {0, 3, 3},
-        {2, 3, 5},
-        {2, 5, 2},
-        {3, 5, 1},
-        {5, 4, 1},
-        {2, 4, 1}
-    };
-    int s = 0, t = 4;
-    solve(N, M, light, crime, input, s, t);
-    return 0;
-}
+// The main function has been removed to compile this as a library.
