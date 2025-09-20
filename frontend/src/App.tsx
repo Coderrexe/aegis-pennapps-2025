@@ -53,11 +53,11 @@ function App() {
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',
-            width: '83%',
-            height: '83%',
+            width: '80%',
+            height: '80%',
             position: 'absolute',
-            top: '8.5%',
-            left: '7.75%',
+            top: '10%',
+            left: '10%',
             display: videoEnded ? 'block' : 'none'
           }}
         />
@@ -89,6 +89,7 @@ function App() {
             <p className="hero-description">
               An adaptive navigation driven by <br /> 
               real-time data optimized for your safety.
+
             </p>
             <div className="hero-buttons">
               <button className="btn btn-primary">Get Started</button>
