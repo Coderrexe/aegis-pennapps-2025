@@ -49,6 +49,14 @@ const Navigate: React.FC = () => {
   });
 
   const { location: currentLocation, loading: locationLoading } = useGeolocation();
+  
+  // Real-time location tracking
+  const [isTrackingLocation, setIsTrackingLocation] = useState(false);
+  const watchIdRef = useRef<number | null>(null);
+  const lastLocationRef = useRef<google.maps.LatLng | null>(null);
+  
+  // Demo mode for testing (simulates movement)
+  const [isDemoMode, setIsDemoMode] = useState(false);
   const [map, setMap] = useState<google.maps.Map | null>(null);
   const [searchPanelOpen, setSearchPanelOpen] = useState(false);
   const [startLocation, setStartLocation] = useState('');
@@ -57,6 +65,14 @@ const Navigate: React.FC = () => {
   const [directionsResponse, setDirectionsResponse] = useState<google.maps.DirectionsResult | null>(null);
   const [routeInfo, setRouteInfo] = useState<{distance: string, duration: string} | null>(null);
   const [isCalculatingRoute, setIsCalculatingRoute] = useState(false);
+  
+  // Navigation state
+  const [isNavigating, setIsNavigating] = useState(false);
+  const [currentStepIndex, setCurrentStepIndex] = useState(0);
+  const [userHeading, setUserHeading] = useState<number>(0);
+  const [remainingDistance, setRemainingDistance] = useState<string>('');
+  const [remainingTime, setRemainingTime] = useState<string>('');
+  const [navigationSteps, setNavigationSteps] = useState<google.maps.DirectionsStep[]>([]);
   
   const startAutocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
   const endAutocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
@@ -164,6 +180,11 @@ const Navigate: React.FC = () => {
       
       console.log('📊 Route info:', routeData);
       setRouteInfo(routeData);
+      
+      // Extract navigation steps for turn-by-turn directions
+      const steps = leg.steps || [];
+      setNavigationSteps(steps);
+      console.log('🧭 Navigation steps extracted:', steps.length, 'steps');
 
       // Fit the map to show the entire route
       if (map && route.bounds) {
@@ -186,6 +207,194 @@ const Navigate: React.FC = () => {
       console.log('🏁 Route calculation finished');
       setIsCalculatingRoute(false);
     }
+  };
+
+  // Real-time location tracking functions
+  const startLocationTracking = () => {
+    if ('geolocation' in navigator) {
+      setIsTrackingLocation(true);
+      
+      const options = {
+        enableHighAccuracy: true,
+        timeout: 5000,
+        maximumAge: 0
+      };
+
+      watchIdRef.current = navigator.geolocation.watchPosition(
+        (position) => {
+          const newLocation = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          };
+          
+          console.log('📍 Location updated:', newLocation);
+          
+          // Calculate heading from movement if we have a previous location
+          if (lastLocationRef.current) {
+            const heading = calculateHeadingFromMovement(lastLocationRef.current, new google.maps.LatLng(newLocation.lat, newLocation.lng));
+            console.log('🧭 Calculated heading from movement:', heading);
+            setUserHeading(heading);
+            
+            if (map && isNavigating) {
+              map.setHeading(heading);
+            }
+          }
+          
+          // Update map center to follow user
+          if (map && isNavigating) {
+            map.setCenter(newLocation);
+          }
+          
+          // Store current location for next heading calculation
+          lastLocationRef.current = new google.maps.LatLng(newLocation.lat, newLocation.lng);
+          
+          // Use GPS heading if available (mobile devices)
+          if (position.coords.heading !== null && position.coords.heading !== undefined) {
+            const gpsHeading = position.coords.heading;
+            console.log('📱 GPS heading available:', gpsHeading);
+            setUserHeading(gpsHeading);
+            
+            if (map && isNavigating) {
+              map.setHeading(gpsHeading);
+            }
+          }
+        },
+        (error) => {
+          console.error('❌ Location tracking error:', error);
+        },
+        options
+      );
+    }
+  };
+
+  const stopLocationTracking = () => {
+    if (watchIdRef.current !== null) {
+      navigator.geolocation.clearWatch(watchIdRef.current);
+      watchIdRef.current = null;
+      setIsTrackingLocation(false);
+    }
+  };
+
+  // Start Navigation Function
+  const handleStartNavigation = () => {
+    if (!currentLocation || !directionsResponse || !navigationSteps.length) {
+      console.warn('❌ Cannot start navigation: missing required data');
+      return;
+    }
+
+    console.log('🚀 Starting navigation mode...');
+    console.log('📍 Navigation steps:', navigationSteps.map((step, i) => ({
+      step: i + 1,
+      instruction: step.instructions,
+      distance: step.distance?.text,
+      duration: step.duration?.text
+    })));
+    
+    setIsNavigating(true);
+    setCurrentStepIndex(0);
+    
+    // Initialize remaining distance and time
+    const route = directionsResponse.routes[0];
+    const leg = route.legs[0];
+    setRemainingDistance(leg.distance?.text || '');
+    setRemainingTime(leg.duration?.text || '');
+
+    // Zoom in and center on user location for navigation
+    if (map) {
+      map.setZoom(17); // Good zoom for navigation (not too close)
+      map.setCenter(currentLocation);
+    }
+    
+    // Start real-time tracking
+    startLocationTracking();
+    startHeadingTracking();
+    
+    // Start demo mode for testing on laptops (comment out for mobile)
+    startDemoMode();
+
+    console.log('✅ Navigation started with', navigationSteps.length, 'steps');
+  };
+
+  // Stop Navigation Function
+  const handleStopNavigation = () => {
+    console.log('🛑 Stopping navigation...');
+    setIsNavigating(false);
+    setCurrentStepIndex(0);
+    setUserHeading(0);
+    
+    if (map) {
+      map.setZoom(13); // Return to normal zoom
+      map.setHeading(0); // Reset map rotation
+    }
+    
+    // Stop all tracking
+    stopLocationTracking();
+    stopHeadingTracking();
+    console.log('✅ Navigation stopped');
+  };
+
+  // Heading tracking functions
+  const startHeadingTracking = () => {
+    if ('DeviceOrientationEvent' in window) {
+      window.addEventListener('deviceorientation', handleDeviceOrientation);
+    }
+  };
+
+  const stopHeadingTracking = () => {
+    if ('DeviceOrientationEvent' in window) {
+      window.removeEventListener('deviceorientation', handleDeviceOrientation);
+    }
+  };
+
+  const handleDeviceOrientation = (event: DeviceOrientationEvent) => {
+    if (event.alpha !== null) {
+      // Convert compass heading to map heading (compass is opposite direction)
+      let heading = 360 - event.alpha;
+      if (heading >= 360) heading -= 360;
+      
+      console.log('🧭 Device orientation:', event.alpha, '→ Map heading:', heading);
+      setUserHeading(heading);
+      
+      // Rotate map to match user's heading in navigation mode
+      if (map && isNavigating) {
+        map.setHeading(heading);
+      }
+    }
+  };
+
+  // Alternative heading detection using GPS movement direction
+  const calculateHeadingFromMovement = (oldPos: google.maps.LatLng, newPos: google.maps.LatLng): number => {
+    const lat1 = oldPos.lat() * Math.PI / 180;
+    const lat2 = newPos.lat() * Math.PI / 180;
+    const deltaLng = (newPos.lng() - oldPos.lng()) * Math.PI / 180;
+    
+    const y = Math.sin(deltaLng) * Math.cos(lat2);
+    const x = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(deltaLng);
+    
+    const bearing = Math.atan2(y, x) * 180 / Math.PI;
+    return (bearing + 360) % 360;
+  };
+
+  // Demo mode for testing on laptops (simulates heading changes)
+  const startDemoMode = () => {
+    setIsDemoMode(true);
+    let demoHeading = 0;
+    
+    const demoInterval = setInterval(() => {
+      if (!isNavigating) {
+        clearInterval(demoInterval);
+        setIsDemoMode(false);
+        return;
+      }
+      
+      demoHeading = (demoHeading + 10) % 360;
+      console.log('🎮 Demo mode heading:', demoHeading);
+      setUserHeading(demoHeading);
+      
+      if (map) {
+        map.setHeading(demoHeading);
+      }
+    }, 1000); // Rotate 10 degrees every second
   };
 
   const handleUseCurrentLocation = async () => {
@@ -253,19 +462,24 @@ const Navigate: React.FC = () => {
         onLoad={onLoad}
         onUnmount={onUnmount}
       >
-        {/* Current Location Marker - only show if no route is displayed */}
-        {currentLocation && !directionsResponse && (
+        {/* User Location Marker - shows different icons based on navigation state */}
+        {currentLocation && (
           <Marker
             position={currentLocation}
             icon={{
-              url: 'data:image/svg+xml;base64,' + btoa(`
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="12" cy="12" r="8" fill="#4285F4" stroke="white" stroke-width="3"/>
-                  <circle cx="12" cy="12" r="3" fill="white"/>
-                </svg>
-              `),
-              scaledSize: new window.google.maps.Size(24, 24),
-              anchor: new window.google.maps.Point(12, 12),
+              url: 'data:image/svg+xml;base64,' + btoa(
+                isNavigating 
+                  ? `<svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" transform="rotate(${userHeading})">
+                      <circle cx="12" cy="12" r="10" fill="#4285F4" stroke="white" stroke-width="2"/>
+                      <path d="M12 6 L16 18 L12 15 L8 18 Z" fill="white"/>
+                    </svg>`
+                  : `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <circle cx="12" cy="12" r="8" fill="#4285F4" stroke="white" stroke-width="3"/>
+                      <circle cx="12" cy="12" r="3" fill="white"/>
+                    </svg>`
+              ),
+              scaledSize: new window.google.maps.Size(isNavigating ? 32 : 24, isNavigating ? 32 : 24),
+              anchor: new window.google.maps.Point(isNavigating ? 16 : 12, isNavigating ? 16 : 12),
             }}
           />
         )}
@@ -275,12 +489,24 @@ const Navigate: React.FC = () => {
           <DirectionsRenderer
             directions={directionsResponse}
             options={{
-              suppressMarkers: false,
+              suppressMarkers: isNavigating, // Hide default markers during navigation to show custom user marker
               polylineOptions: {
-                strokeColor: '#2563eb', // Blue color for the route
-                strokeWeight: 6,
+                strokeColor: isNavigating ? '#10b981' : '#2563eb', // Green during navigation, blue during planning
+                strokeWeight: isNavigating ? 8 : 6,
                 strokeOpacity: 0.8,
               },
+              markerOptions: {
+                icon: {
+                  url: 'data:image/svg+xml;base64,' + btoa(`
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="#dc2626" stroke="white" stroke-width="2"/>
+                      <circle cx="12" cy="9" r="2.5" fill="white"/>
+                    </svg>
+                  `),
+                  scaledSize: new window.google.maps.Size(24, 24),
+                  anchor: new window.google.maps.Point(12, 24),
+                }
+              }
             }}
           />
         )}
@@ -337,8 +563,113 @@ const Navigate: React.FC = () => {
         onMyLocation={handleMyLocation}
       />
 
+      {/* Enhanced Navigation Panel - Premium UI */}
+      {isNavigating && navigationSteps.length > 0 && (
+        <div className="absolute top-4 left-4 right-4 z-50 max-w-md mx-auto">
+          {/* Main Navigation Card */}
+          <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-2xl shadow-2xl overflow-hidden border border-blue-500/20">
+            {/* Header Section */}
+            <div className="bg-white/10 backdrop-blur-sm px-4 py-2 flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+                  <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </div>
+                <div>
+                  <div className="text-white font-semibold text-sm">Navigation Active</div>
+                  <div className="text-blue-100 text-xs">Step {currentStepIndex + 1} of {navigationSteps.length}</div>
+                </div>
+              </div>
+              <button
+                onClick={handleStopNavigation}
+                className="w-8 h-8 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition-all duration-200"
+              >
+                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Current Instruction */}
+            {navigationSteps[currentStepIndex] && (
+              <div className="px-4 py-3 bg-white">
+                <div className="flex items-start space-x-3">
+                  <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+                    <span className="text-white font-bold text-sm">{currentStepIndex + 1}</span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div 
+                      className="text-gray-900 font-medium text-sm leading-tight mb-1"
+                      dangerouslySetInnerHTML={{ 
+                        __html: navigationSteps[currentStepIndex].instructions 
+                      }}
+                    />
+                    <div className="text-blue-600 text-xs font-medium">
+                      In {navigationSteps[currentStepIndex].distance?.text}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Progress Bar */}
+            <div className="px-4 pb-2">
+              <div className="w-full bg-white/20 rounded-full h-1">
+                <div 
+                  className="bg-white h-1 rounded-full transition-all duration-300"
+                  style={{ width: `${((currentStepIndex + 1) / navigationSteps.length) * 100}%` }}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Stats Card */}
+          <div className="mt-3 bg-white/95 backdrop-blur-sm rounded-xl shadow-lg border border-gray-200/50 overflow-hidden">
+            <div className="px-4 py-3">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="text-center">
+                  <div className="flex items-center justify-center space-x-1 mb-1">
+                    <svg className="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    </svg>
+                    <span className="text-xs font-medium text-gray-600">Distance</span>
+                  </div>
+                  <div className="text-lg font-bold text-green-600">{remainingDistance}</div>
+                </div>
+                <div className="text-center">
+                  <div className="flex items-center justify-center space-x-1 mb-1">
+                    <svg className="w-4 h-4 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span className="text-xs font-medium text-gray-600">ETA</span>
+                  </div>
+                  <div className="text-lg font-bold text-orange-600">{remainingTime}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Status Indicators */}
+          <div className="mt-2 flex items-center justify-center space-x-2">
+            {isTrackingLocation && (
+              <div className="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-medium flex items-center space-x-1">
+                <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                <span>Live Tracking</span>
+              </div>
+            )}
+            {isDemoMode && (
+              <div className="bg-purple-500 text-white px-3 py-1 rounded-full text-xs font-medium flex items-center space-x-1">
+                <div className="w-2 h-2 bg-white rounded-full animate-spin"></div>
+                <span>Demo Mode</span>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Route Information Panel - Compact Bottom Panel */}
-      {routeInfo && directionsResponse && (
+      {routeInfo && directionsResponse && !isNavigating && (
         <div className="absolute bottom-4 left-4 right-4 md:left-6 md:right-6 z-40 bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden max-w-md mx-auto">
           <div className="p-4">
             <div className="flex items-center justify-between mb-3">
@@ -369,10 +700,7 @@ const Navigate: React.FC = () => {
 
             <div className="space-y-2">
               <button
-                onClick={() => {
-                  console.log('🚀 Starting navigation...');
-                  // TODO: Implement actual navigation
-                }}
+                onClick={handleStartNavigation}
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center space-x-2"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
