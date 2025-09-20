@@ -1,5 +1,4 @@
-@import "tailwindcss/preflight";
-@import "tailwindcss/utilities";
+/* Basic CSS Reset */
 
 :root {
   --primary: #011F5B;
