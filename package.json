@@ -4,6 +4,7 @@
   "main": "index.js",
   "scripts": {
     "start": "concurrently --names \"BACKEND,FRONTEND\" --prefix-colors \"blue,green\" \"npm:start:backend\" \"npm:start:frontend\"",
+    "dev": "npm start",
     "start:backend": "cd backend && ./venv/bin/uvicorn main:app --host 0.0.0.0 --port 8000 --reload --use-colors",
     "start:frontend": "npm run dev --prefix frontend",
     "test": "echo \"Error: no test specified\" && exit 1"

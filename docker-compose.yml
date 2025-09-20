@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+    # The command overrides the Dockerfile's CMD to enable --reload for development
+    command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      # Mount the source code for hot-reloading
+      - ./frontend:/app
+      # Use an anonymous volume to keep the container's node_modules separate
+      - /app/node_modules
+    environment:
+      # This helps with file watching and hot-reloading inside Docker
+      - CHOKIDAR_USEPOLLING=true

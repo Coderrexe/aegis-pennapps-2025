@@ -18,7 +18,7 @@ const Navigate: React.FC = () => {
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
   });
 
-  const [map, setMap] = React.useState<google.maps.Map | null>(null);
+  const [_map, setMap] = React.useState<google.maps.Map | null>(null);
 
   const onLoad = React.useCallback((mapInstance: google.maps.Map) => {
     const bounds = new window.google.maps.LatLngBounds(center);
