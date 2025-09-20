@@ -13,7 +13,7 @@ class CacheManager:
         self._cache_timestamps = {}
         self._current_cache_size = 0
         self.redis_client = None
-        self._init_redis()
+        # self._init_redis()
     
     def _init_redis(self):
         try:

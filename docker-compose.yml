@@ -2,11 +2,13 @@ version: '3.8'
 
 services:
   backend:
-    build: ./backend
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
     ports:
       - "8000:8000"
     volumes:
-      - ./backend:/app
+      - ./backend:/app/backend
     # The command overrides the Dockerfile's CMD to enable --reload for development
     command: ["python", "main.py"]
 

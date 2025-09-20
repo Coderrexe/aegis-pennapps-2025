@@ -6,18 +6,20 @@ WORKDIR /app
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
     gcc \
+    g++ \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements first for better caching
-COPY requirements.txt .
-
-# Install Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy application code
+# Copy the entire project
 COPY . .
 
-# Create non-root user
+# Install dependencies, including the Cython extension
+RUN pip install --no-cache-dir -r backend/requirements.txt
+RUN pip install .
+
+# Set the working directory to the backend folder
+WORKDIR /app/backend
+
+# Create non-root user and set permissions
 RUN useradd --create-home --shell /bin/bash app \
     && chown -R app:app /app
 USER app
