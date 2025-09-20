@@ -2,37 +2,7 @@
 
 This project contains a React frontend and a Python FastAPI backend.
 
-## Running with Docker (Recommended)
-
-This is the easiest way to get the application running. It ensures a consistent development environment.
-
-### Prerequisites
-
-- [Docker](https://www.docker.com/get-started)
-- [Docker Compose](https://docs.docker.com/compose/install/) (usually included with Docker Desktop)
-
-### Running the Application
-
-1.  **Build and start the containers**:
-    From the root directory, run:
-    ```bash
-    docker-compose up --build
-    ```
-    This command will build the Docker images for both the frontend and backend and then start the services. You'll see the color-coded logs from both servers in your terminal.
-
-2.  **Access the application**:
-    - Frontend: [http://localhost:3000](http://localhost:3000)
-    - Backend: [http://localhost:8000](http://localhost:8000)
-
-3.  **Stopping the application**:
-    Press `Ctrl + C` in the terminal, and then run the following command to stop and remove the containers:
-    ```bash
-    docker-compose down
-    ```
-
----
-
-## Running Locally (Without Docker)
+## Running Locally (Recommended)
 
 ### Prerequisites
 
@@ -80,3 +50,33 @@ This will:
 - Start the React frontend development server (usually on `http://localhost:3000`).
 
 The console output from both servers will be displayed in your terminal, with color-coding to distinguish between them.
+
+---
+
+## Running with Docker (Alternative)
+
+This method uses Docker to run the application in isolated containers. It's useful for ensuring a consistent environment but may be slower for rapid development.
+
+### Prerequisites
+
+- [Docker](https://www.docker.com/get-started)
+- [Docker Compose](https://docs.docker.com/compose/install/) (usually included with Docker Desktop)
+
+### Running the Application
+
+1.  **Build and start the containers**:
+    From the root directory, run:
+    ```bash
+    docker-compose up --build
+    ```
+    This command will build the Docker images for both the frontend and backend and then start the services.
+
+2.  **Access the application**:
+    - Frontend: [http://localhost:3000](http://localhost:3000)
+    - Backend: [http://localhost:8000](http://localhost:8000)
+
+3.  **Stopping the application**:
+    Press `Ctrl + C` in the terminal, and then run the following command to stop and remove the containers:
+    ```bash
+    docker-compose down
+    ```
