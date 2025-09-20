@@ -17,8 +17,8 @@ const NavigationControls: React.FC<NavigationControlsProps> = ({
 }) => {
   return (
     <div className="absolute top-4 left-4 z-20 flex flex-col gap-4 w-96">
-      <Link to="/" className="w-full">
-        <button className="w-full bg-[var(--base)] text-white font-semibold py-2 px-4 rounded-lg shadow-lg hover:bg-[var(--primary)] transition-colors duration-300">
+      <Link to="/" >
+        <button className="bg-[var(--base)] text-white font-semibold py-2 px-4 rounded-lg shadow-lg hover:bg-[var(--primary)] transition-colors duration-300">
           Home
         </button>
       </Link>
@@ -27,7 +27,7 @@ const NavigationControls: React.FC<NavigationControlsProps> = ({
         <AutocompleteInput onPlaceSelect={onDestinationPlaceSelect} placeholder="Enter destination" />
         <button
           onClick={onGetDirectionsClick}
-          className="w-full bg-[var(--accent)] text-[var(--primary)] font-semibold py-2 px-4 rounded-lg shadow-lg hover:bg-yellow-400 disabled:bg-[var(--neutral)] disabled:cursor-not-allowed transition-colors duration-300"
+          className="bg-[var(--accent)] text-[var(--primary)] font-semibold py-2 px-4 rounded-lg shadow-lg hover:bg-yellow-400 disabled:bg-[var(--neutral)] disabled:cursor-not-allowed transition-colors duration-300"
           disabled={isDirectionsDisabled}
         >
           Get Directions
