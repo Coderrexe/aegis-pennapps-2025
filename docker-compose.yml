@@ -8,7 +8,7 @@ services:
     volumes:
       - ./backend:/app
     # The command overrides the Dockerfile's CMD to enable --reload for development
-    command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+    command: ["python", "main.py"]
 
   frontend:
     build: ./frontend
