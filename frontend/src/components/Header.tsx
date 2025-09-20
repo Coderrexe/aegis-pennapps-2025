@@ -10,6 +10,7 @@ const Header: React.FC = () => {
       <nav>
         <ul className="flex gap-4 md:gap-10 list-none">
           <li>
+<<<<<<< HEAD
             <Link 
               to="/about" 
               className="text-xs md:text-sm font-normal tracking-wide uppercase cursor-pointer hover:underline transition-all"
@@ -22,6 +23,19 @@ const Header: React.FC = () => {
               to="/navigate" 
               className="text-xs md:text-sm font-normal tracking-wide uppercase cursor-pointer hover:underline transition-all"
             >
+=======
+            <a 
+              href="https://devpost.com/software/aegis-lxtqi3" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-xs md:text-sm font-normal tracking-wide uppercase cursor-pointer hover:underline"
+            >
+              About
+            </a>
+          </li>
+          <li>
+            <Link to="/navigate" className="text-xs md:text-sm font-normal tracking-wide uppercase cursor-pointer hover:underline">
+>>>>>>> f7f9cec2e6db0034ba4c4f7d9022afa8ec0f3845
               Navigate
             </Link>
           </li>

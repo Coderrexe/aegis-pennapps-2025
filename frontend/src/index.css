@@ -8,6 +8,24 @@
   --base: #020202;
 }
 
+@layer utilities {
+  .animation-delay-500 {
+    animation-delay: 500ms;
+  }
+  .animate-fade-in {
+    animation: fadeIn 1s ease-in-out forwards;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+}
+
 html {
   font-family: 'Inter', ui-sans-serif, system-ui;
 }
