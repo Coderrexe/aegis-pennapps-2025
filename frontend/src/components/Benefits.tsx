@@ -31,9 +31,6 @@ const Benefits: React.FC<BenefitsProps> = ({ cardOpacity, cardTransform }) => {
               Aegis sources hundreds of thousands of multimodal data points from NASA infrared satellites and real-time 911 APIs to run novel danger-calculating algorithms. 
               </p>
             </div>
-            <button className="text-sm tracking-wider uppercase text-[var(--neutral)]/60 hover:text-[var(--neutral)] hover:underline transition-colors cursor-pointer">
-              EXPAND +
-            </button>
           </div>
 
           <div className="border border-[var(--neutral)]/20 p-8 hover:border-[var(--neutral)]/40 transition-all duration-300">
@@ -46,9 +43,6 @@ const Benefits: React.FC<BenefitsProps> = ({ cardOpacity, cardTransform }) => {
               Aegis applies multi-objective heuristics to adaptively assess risk levels for different routes through spectral radiance, optimized A* variants, and time-decay scoring.
               </p>
             </div>
-            <button className="text-sm tracking-wider uppercase text-[var(--neutral)]/60 hover:text-[var(--neutral)] hover:underline transition-colors cursor-pointer">
-              EXPAND +
-            </button>
           </div>
 
           <div className="border border-[var(--neutral)]/20 p-8 hover:border-[var(--neutral)]/40 transition-all duration-300">
@@ -61,9 +55,6 @@ const Benefits: React.FC<BenefitsProps> = ({ cardOpacity, cardTransform }) => {
               Aegis optimizes its novel algorithms to run in milliseconds with minimal latency between user navigation and real-world danger updates.
               </p>
             </div>
-            <button className="text-sm tracking-wider uppercase text-[var(--neutral)]/60 hover:text-[var(--neutral)] hover:underline transition-colors cursor-pointer">
-              EXPAND +
-            </button>
           </div>
         </div>
       </div>
