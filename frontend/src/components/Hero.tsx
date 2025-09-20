@@ -11,11 +11,11 @@ const Hero: React.FC<HeroProps> = ({ showScrollHint, scrollY }) => {
     <section className="h-screen flex items-center justify-center relative px-6 md:px-0">
       <div className="relative w-full max-w-[600px] h-auto md:w-[600px] md:h-[600px] flex flex-col md:flex-row items-center justify-center">
         <SphereAnimation />
-        <div className="text-center md:absolute md:-right-52 md:top-1/2 md:-translate-y-1/2 md:text-left md:w-auto">
+        <div className="text-center md:absolute md:-right-52 md:top-1/2 md:-translate-y-1/2 md:text-left md:w-auto animate-fade-in">
           <h1 className="text-4xl md:text-5xl font-light leading-tight mb-2">
             Navigating cities is dangerous.
           </h1>
-          <h2 className="text-4xl md:text-5xl font-light italic opacity-80 leading-tight">
+          <h2 className="text-4xl md:text-5xl font-light italic opacity-80 leading-tight animation-delay-500">
             We fix that.
           </h2>
         </div>

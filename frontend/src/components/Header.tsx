@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const Header: React.FC = () => {
   return (
@@ -6,11 +7,20 @@ const Header: React.FC = () => {
       <div className="text-xl md:text-3xl font-light tracking-wider">Aegis</div>
       <nav>
         <ul className="flex gap-4 md:gap-10 list-none">
-          <li className="text-xs md:text-sm font-normal tracking-wide uppercase cursor-pointer hover:underline">
-            About
+          <li>
+            <a 
+              href="https://devpost.com/software/aegis-lxtqi3" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-xs md:text-sm font-normal tracking-wide uppercase cursor-pointer hover:underline"
+            >
+              About
+            </a>
           </li>
-          <li className="text-xs md:text-sm font-normal tracking-wide uppercase cursor-pointer hover:underline">
-            Navigate
+          <li>
+            <Link to="/navigate" className="text-xs md:text-sm font-normal tracking-wide uppercase cursor-pointer hover:underline">
+              Navigate
+            </Link>
           </li>
         </ul>
       </nav>
