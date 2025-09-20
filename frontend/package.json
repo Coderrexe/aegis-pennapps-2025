@@ -11,8 +11,10 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.13",
+    "@vis.gl/react-google-maps": "^1.5.5",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
+    "react-router-dom": "^7.9.1",
     "tailwindcss": "^4.1.13"
   },
   "devDependencies": {
