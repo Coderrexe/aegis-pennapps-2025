@@ -1,6 +1,6 @@
 import os
 import sys
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify
 from flask_cors import CORS
 from dotenv import load_dotenv
 import logging
@@ -24,17 +24,20 @@ app = Flask(__name__)
 
 # === CORS Setup ===
 def get_allowed_origins():
-    origins = ["http://localhost:3000", "https://aeg1s.vercel.app]
+    # Fix: closing quote for Vercel URL
+    origins = ["http://localhost:3000", "https://aeg1s.vercel.app"]
     ngrok_url = os.environ.get("NGROK_URL")
     if ngrok_url:
         origins.append(ngrok_url)
     return origins
 
+# Apply CORS to all routes
 CORS(
     app,
     resources={r"/*": {"origins": get_allowed_origins()}},
     supports_credentials=True,
-    methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+    methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers="*"
 )
 
 # === Logging ===
@@ -63,7 +66,6 @@ def internal_error(error):
 # === List all endpoints (ngrok-ready) ===
 def list_endpoints():
     ngrok_url = os.environ.get("NGROK_URL", f"http://localhost:{os.environ.get('PORT', 5002)}")
-    
     print("\n=== Available API Endpoints ===\n")
     for rule in app.url_map.iter_rules():
         if "static" in rule.endpoint:
@@ -79,8 +81,5 @@ if __name__ == "__main__":
     debug = os.environ.get("FLASK_DEBUG", "False").lower() == "true"
 
     logger.info(f"Starting Crime Data API on port {port} with debug mode {'on' if debug else 'off'}")
-
-    # Print all endpoints before running
     list_endpoints()
-
     app.run(host="0.0.0.0", port=port, debug=debug)

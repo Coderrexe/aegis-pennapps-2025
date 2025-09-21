@@ -30,7 +30,7 @@ export const CrimeDetectedModal: React.FC<CrimeDetectedModalProps> = ({ crime, o
   useEffect(() => {
     if (crime && playedSoundForCrimeIdRef.current !== crime.id) {
       const audio = new Audio('/alert.mp3');
-      audio.play().catch(error => console.error('Error playing audio:', error));
+      audio.play().catch(error => alert('Error playing audio:', error));
       playedSoundForCrimeIdRef.current = crime.id;
       setProgress(100); // Reset progress when a new crime is shown
       const timer = setInterval(() => {
