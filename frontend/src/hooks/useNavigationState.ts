@@ -4,10 +4,11 @@ interface UseNavigationStateProps {
   map: google.maps.Map | null;
   currentLocation: { lat: number; lng: number } | null;
   directionsResponse: google.maps.DirectionsResult | null;
+  setDirectionsResponse: (response: google.maps.DirectionsResult | null) => void;
   navigationSteps: google.maps.DirectionsStep[];
 }
 
-export const useNavigationState = ({ map, currentLocation, directionsResponse, navigationSteps }: UseNavigationStateProps) => {
+export const useNavigationState = ({ map, currentLocation, directionsResponse, setDirectionsResponse, navigationSteps }: UseNavigationStateProps) => {
   const [isNavigating, setIsNavigating] = useState(false);
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [userHeading, setUserHeading] = useState<number>(0);
@@ -20,6 +21,7 @@ export const useNavigationState = ({ map, currentLocation, directionsResponse, n
   const crimeCheckIntervalRef = useRef<number | null>(null);
   const [simulatedLocation, setSimulatedLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [locationForCrimeQuery, setLocationForCrimeQuery] = useState<{ lat: number; lng: number } | null>(null);
+  const [detectedCrime, setDetectedCrime] = useState<any | null>(null); // Using 'any' for now for simplicity
 
   useEffect(() => {
     if (simulatedLocation) {
@@ -152,6 +154,8 @@ export const useNavigationState = ({ map, currentLocation, directionsResponse, n
   }, [map, isNavigating]);
 
   const checkNearbyCrimes = useCallback(async () => {
+    // Don't check for crimes if a modal is already open
+    if (detectedCrime) return;
     if (!locationForCrimeQuery) return;
 
     try {
@@ -159,12 +163,54 @@ export const useNavigationState = ({ map, currentLocation, directionsResponse, n
       const response = await fetch(`/api/crime/nearby?lat=${locationForCrimeQuery.lat}&lng=${locationForCrimeQuery.lng}&radius=1609&minutes=30`);
       if (response.ok) {
         const data = await response.json();
-        alert(`Crime data updated: ${data.total_incidents} incidents found in the last 30 minutes within a 9.99-mile radius.`);
+        if (data.total_incidents > 0) {
+          // For simplicity, we'll just show the first incident in the modal.
+          // In a real app, you might want to find the most severe or closest one.
+          const mostRelevantCrime = data.incidents[0];
+          setDetectedCrime(mostRelevantCrime);
+        }
       }
     } catch (error) {
       console.error('Error checking for nearby crimes:', error);
     }
-  }, [locationForCrimeQuery]);
+  }, [locationForCrimeQuery, detectedCrime]);
+
+  const handleSwitchPath = useCallback(async () => {
+    if (!locationForCrimeQuery || !directionsResponse) return;
+
+    const destination = directionsResponse.routes[0].legs[0].end_location;
+
+    try {
+      const response = await fetch('/api/algorithm/astar', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          origin: {
+            lat: locationForCrimeQuery.lat,
+            lng: locationForCrimeQuery.lng,
+          },
+          destination: {
+            lat: destination.lat(),
+            lng: destination.lng(),
+          },
+          preference: 'safety',
+        }),
+      });
+
+      if (response.ok) {
+        const newDirections = await response.json();
+        console.log('New directions from API:', newDirections);
+        setDirectionsResponse(newDirections);
+        setDetectedCrime(null);
+      } else {
+        console.error('Failed to get a safer route');
+      }
+    } catch (error) {
+      console.error('Error switching paths:', error);
+    }
+  }, [locationForCrimeQuery, directionsResponse, setDirectionsResponse, setDetectedCrime]);
 
   const handleStartNavigation = useCallback(() => {
     if (!currentLocation || !directionsResponse || !navigationSteps.length) {
@@ -258,5 +304,8 @@ export const useNavigationState = ({ map, currentLocation, directionsResponse, n
     handlePrevStep,
     simulatedLocation,
     locationForCrimeQuery,
+    detectedCrime,
+    setDetectedCrime,
+    handleSwitchPath,
   };
 };

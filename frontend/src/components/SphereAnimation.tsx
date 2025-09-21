@@ -20,7 +20,7 @@ const SphereAnimation: React.FC = () => {
     const centerY = canvas.height / 2;
     const radius = 200;
 
-    const colors = ['#3b82f6', '#10b981', '#ef4444'];
+    const colors = ['#011F5B', '#FFC72C', '#990000'];
 
     const createSpherePoints = (): Point[] => {
       const points: Point[] = [];

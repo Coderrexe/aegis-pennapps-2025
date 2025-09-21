@@ -8,11 +8,11 @@ import { MapControls } from '../../components/MapControls';
 import { SearchPanel } from '../../components/SearchPanel';
 import { StatusBar } from '../../components/StatusBar';
 import { NavigationHeader } from './NavigationHeader';
-import { NavigationUI } from './NavigationUI';
 import { RouteDetails } from './RouteDetails';
 import { UserMarker } from './UserMarker';
 import { LoadingSpinner } from './LoadingSpinner';
 import { ErrorDisplay } from './ErrorDisplay';
+import { NavigationModals } from './NavigationModals';
 import { libraries, containerStyle, defaultCenter, mapOptions } from '../../config/map.config';
 
 
@@ -74,17 +74,19 @@ const Navigate: React.FC = () => {
     userHeading,
     remainingDistance,
     remainingTime,
-    isTrackingLocation,
-    isDemoMode,
     handleStartNavigation,
     handleStopNavigation,
     handleNextStep,
     handlePrevStep,
     simulatedLocation,
+    detectedCrime,
+    setDetectedCrime,
+    handleSwitchPath,
   } = useNavigationState({
     map,
     currentLocation,
     directionsResponse,
+    setDirectionsResponse,
     navigationSteps,
   });
 
@@ -175,18 +177,6 @@ const Navigate: React.FC = () => {
       />
 
       
-      <NavigationUI
-        isNavigating={isNavigating}
-        navigationSteps={navigationSteps}
-        currentStepIndex={currentStepIndex}
-        handleNextStep={handleNextStep}
-        handlePrevStep={handlePrevStep}
-        handleStopNavigation={handleStopNavigation}
-        remainingDistance={remainingDistance}
-        remainingTime={remainingTime}
-        isTrackingLocation={isTrackingLocation}
-        isDemoMode={isDemoMode}
-      />
 
       
       <RouteDetails
@@ -206,6 +196,21 @@ const Navigate: React.FC = () => {
         zoom={zoom}
         hasLocation={!!currentLocation}
         isLoading={locationLoading}
+      />
+
+      <NavigationModals
+        isNavigating={isNavigating}
+        navigationSteps={navigationSteps}
+        currentStepIndex={currentStepIndex}
+        handleNextStep={handleNextStep}
+        handlePrevStep={handlePrevStep}
+        handleStopNavigation={handleStopNavigation}
+        remainingDistance={remainingDistance}
+        remainingTime={remainingTime}
+        crime={detectedCrime}
+        onCloseCrimeModal={() => setDetectedCrime(null)}
+        onSwitchPath={handleSwitchPath}
+        currentUserLocation={currentLocation}
       />
     </div>
   ) : <LoadingSpinner />;

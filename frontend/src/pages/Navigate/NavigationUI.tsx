@@ -9,8 +9,6 @@ interface NavigationUIProps {
   handleStopNavigation: () => void;
   remainingDistance: string;
   remainingTime: string;
-  isTrackingLocation: boolean;
-  isDemoMode: boolean;
 }
 
 export const NavigationUI: React.FC<NavigationUIProps> = ({
@@ -22,8 +20,6 @@ export const NavigationUI: React.FC<NavigationUIProps> = ({
     handleStopNavigation,
   remainingDistance,
   remainingTime,
-  isTrackingLocation,
-  isDemoMode,
 }) => {
   
     if (!isNavigating || navigationSteps.length === 0) {
@@ -31,7 +27,7 @@ export const NavigationUI: React.FC<NavigationUIProps> = ({
   }
 
   return (
-    <div className="absolute bottom-4 left-0 right-0 z-50 bg-[var(--base)] text-primary">
+    <div className="w-full max-w-md bg-[var(--base)] text-primary rounded-lg overflow-hidden shadow-2xl border border-[var(--neutral)]/10">
       <div className="bg-accent shadow-2xl overflow-hidden border-[var(--neutral)]/20">
         <div className="bg-accent px-4 py-2 flex items-center justify-between">
           <div className="flex items-center space-x-3">
