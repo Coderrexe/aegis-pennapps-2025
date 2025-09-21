@@ -18,9 +18,11 @@ interface CrimeDetectedModalProps {
   onClose: () => void;
   onSwitchPath: () => void;
   currentUserLocation: { lat: number; lng: number } | null;
+  alternateRoute: { path: google.maps.LatLngLiteral[], time: number, addedTime: number } | null;
+  onSelectSaferRoute: () => void;
 }
 
-export const CrimeDetectedModal: React.FC<CrimeDetectedModalProps> = ({ crime, onClose, onSwitchPath, currentUserLocation }) => {
+export const CrimeDetectedModal: React.FC<CrimeDetectedModalProps> = ({ crime, onClose, onSwitchPath, currentUserLocation, alternateRoute, onSelectSaferRoute }) => {
     const [progress, setProgress] = useState(100);
   const [placeName, setPlaceName] = useState<string | null>(null);
   const [distance, setDistance] = useState<string | null>(null);
@@ -104,19 +106,25 @@ export const CrimeDetectedModal: React.FC<CrimeDetectedModalProps> = ({ crime, o
         </div>
 
         <div>
-          <div className="grid grid-cols-2 gap-2 text-center mt-2 text-xs">
-            <div className="bg-white/5 p-2 rounded-md">
-              <p className="text-neutral/70">Added Time</p>
-              <p className="text-accent font-semibold">~1 min</p>
+          {alternateRoute && (
+            <div className="grid grid-cols-2 gap-2 text-center mt-2 text-xs">
+              <div className="bg-white/5 p-2 rounded-md">
+                <p className="text-neutral/70">Added Time</p>
+                <p className="text-accent font-semibold">~{alternateRoute.addedTime} min</p>
+              </div>
+              <div className="bg-white/5 p-2 rounded-md">
+                <p className="text-neutral/70">Safety Increase</p>
+                <p className="text-green-400 font-semibold">+15%</p>
+              </div>
             </div>
-            <div className="bg-white/5 p-2 rounded-md">
-              <p className="text-neutral/70">Safety Increase</p>
-              <p className="text-green-400 font-semibold">+15%</p>
-            </div>
-          </div>
+          )}
         </div>
-        <button onClick={onSwitchPath} className="w-full px-4 py-3 bg-secondary text-base-content font-semibold rounded-md hover:bg-opacity-80 transition-colors">
-          Switch to Safer Route
+        <button 
+          onClick={alternateRoute ? onSelectSaferRoute : onSwitchPath} 
+          className="w-full px-4 py-3 bg-secondary text-base-content font-semibold rounded-md hover:bg-opacity-80 transition-colors disabled:opacity-50 cursor-pointer hover:bg-white/10 active:bg-white/20"
+          disabled={!crime}
+        >
+          {alternateRoute ? `Switch to Safer Route (+${alternateRoute.addedTime} min)` : 'Find Safer Route'}
         </button>
       </div>
 

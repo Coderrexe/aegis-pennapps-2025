@@ -12,7 +12,10 @@ logger = logging.getLogger(__name__)
 
 class CrimeDataService:
     def __init__(self):
-        self.local_crime_file = os.path.join(os.path.dirname(__file__), 'data', 'local_crimes.csv')
+        # Construct the correct path to the data directory
+        backend_dir = os.path.dirname(__file__)
+        project_root = os.path.dirname(backend_dir)
+        self.local_crime_file = os.path.join(project_root, 'data', 'local_crimes.csv')
         self.philadelphia_api_base = os.getenv('PHILADELPHIA_API_BASE', 'https://phl.carto.com/api/v2/sql')
         self.fbi_api_base = os.getenv('FBI_API_BASE', 'https://api.usa.gov/crime/fbi/cde')
         self.severity_mapping = {
@@ -96,8 +99,8 @@ class CrimeDataService:
                 lng
             FROM incidents_part1_part2
             WHERE
-                dispatch_date_time >= '{start_time.strftime('%Y-%m-%d %H:%M:%S')}'
-                AND dispatch_date_time <= '{end_time.strftime('%Y-%m-%d %H:%M:%S')}'
+                dispatch_date_time >= '{start_time.strftime('%Y-%m-%d')}'
+                AND dispatch_date_time <= '{end_time.strftime('%Y-%m-%d')}'
                 AND lat BETWEEN {lat - radius_deg} AND {lat + radius_deg}
                 AND lng BETWEEN {lng - radius_deg} AND {lng + radius_deg}
             ORDER BY dispatch_date_time DESC
@@ -168,8 +171,14 @@ class CrimeDataService:
 
             logger.info(f"Loaded {len(df)} rows from {self.local_crime_file}")
             
-            # Make datetime column timezone-aware (UTC)
-            df['datetime'] = pd.to_datetime(df['datetime']).dt.tz_localize('UTC')
+            # Ensure the datetime column is timezone-aware and in UTC
+            datetimes = pd.to_datetime(df['datetime'])
+            if datetimes.dt.tz is None:
+                # If naive, localize to UTC
+                df['datetime'] = datetimes.dt.tz_localize('UTC')
+            else:
+                # If already aware, convert to UTC
+                df['datetime'] = datetimes.dt.tz_convert('UTC')
             start_time_utc = start_time.astimezone(pytz.utc)
             end_time_utc = end_time.astimezone(pytz.utc)
 
@@ -201,7 +210,23 @@ class CrimeDataService:
                         'distance_meters': round(distance, 2),
                         'source': 'Local'
                     })
-            logger.info(f"--- End Debugging ---: Found {len(crimes)} local crimes.")
+            # Add a hardcoded crime at Levine Hall
+            hardcoded_crime = {
+                'id': "hardcoded_levine",
+                'type': 'Robbery',
+                'severity': 'high',
+                'location': {
+                    'lat': 39.952218,  # Levine Hall coordinates
+                    'lng': -75.193214,
+                    'address': 'Levine Hall, 3330 Walnut St, Philadelphia, PA 19104'
+                },
+                'datetime': datetime.now(pytz.utc).isoformat(),
+                'distance_meters': 100000,  # 100km radius - should cover any search in the area
+                'source': 'Hardcoded Test - Levine Hall'
+            }
+            crimes.append(hardcoded_crime)
+            
+            logger.info(f"--- End Debugging ---: Found {len(crimes)} local crimes (including hardcoded test crime).")
             return crimes
         except Exception as e:
             logger.error(f"Error reading local crime file: {e}", exc_info=True)

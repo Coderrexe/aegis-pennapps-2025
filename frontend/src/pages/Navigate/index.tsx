@@ -1,5 +1,5 @@
-import React, { useState, useCallback } from 'react';
-import { GoogleMap, useJsApiLoader, DirectionsRenderer } from '@react-google-maps/api';
+import React, { useState, useCallback, useEffect } from 'react';
+import { GoogleMap, useJsApiLoader, DirectionsRenderer, Polyline } from '@react-google-maps/api';
 import { useGeolocation } from '../../hooks/useGeolocation';
 import { useMapControls } from '../../hooks/useMapControls';
 import { useRouteSearch } from '../../hooks/useRouteSearch';
@@ -35,6 +35,14 @@ const Navigate: React.FC = () => {
 
   type RoutePreference = 'fastest' | 'lighting' | 'balanced';
   const [routePreference, setRoutePreference] = useState<RoutePreference>('balanced');
+  const [accentColor, setAccentColor] = useState('#011F5B'); // Default color
+
+  useEffect(() => {
+    const color = getComputedStyle(document.documentElement).getPropertyValue('--secondary').trim();
+    if (color) {
+      setAccentColor(color);
+    }
+  }, []);
   
   
 
@@ -80,14 +88,18 @@ const Navigate: React.FC = () => {
     handlePrevStep,
     simulatedLocation,
     detectedCrime,
-    setDetectedCrime,
     handleSwitchPath,
+    alternateRoute,
+    showAlternateRoute,
+    selectAlternateRoute,
+    dismissCrime,
   } = useNavigationState({
     map,
     currentLocation,
     directionsResponse,
     setDirectionsResponse,
     navigationSteps,
+    setNavigationSteps,
   });
 
   const { handleZoomIn, handleZoomOut, handleMyLocation } = useMapControls({
@@ -117,7 +129,7 @@ const Navigate: React.FC = () => {
         <UserMarker currentLocation={simulatedLocation || currentLocation} isNavigating={isNavigating} userHeading={userHeading} />
 
         
-        {directionsResponse && (
+        {directionsResponse && !showAlternateRoute && (
           <DirectionsRenderer
             directions={directionsResponse}
             options={{
@@ -139,6 +151,17 @@ const Navigate: React.FC = () => {
                   anchor: new window.google.maps.Point(12, 24),
                 }
               }
+            }}
+          />
+        )}
+
+        {alternateRoute && showAlternateRoute && (
+          <Polyline
+            path={alternateRoute.path}
+            options={{
+              strokeColor: accentColor,
+              strokeOpacity: 0.8,
+              strokeWeight: 8,
             }}
           />
         )}
@@ -208,9 +231,20 @@ const Navigate: React.FC = () => {
         remainingDistance={remainingDistance}
         remainingTime={remainingTime}
         crime={detectedCrime}
-        onCloseCrimeModal={() => setDetectedCrime(null)}
-        onSwitchPath={handleSwitchPath}
+        onCloseCrimeModal={() => {
+          if (detectedCrime) {
+            dismissCrime(detectedCrime.id);
+          }
+        }}
+        onSwitchPath={() => {
+          handleSwitchPath();
+          // The modal will now show the alternate route option
+        }}
+        onSelectSaferRoute={() => {
+          selectAlternateRoute(); // This will now handle dismissing the crime
+        }}
         currentUserLocation={currentLocation}
+        alternateRoute={alternateRoute}
       />
     </div>
   ) : <LoadingSpinner />;

@@ -15,6 +15,8 @@ interface NavigationModalsProps {
   onCloseCrimeModal: () => void;
   onSwitchPath: () => void;
   currentUserLocation: { lat: number; lng: number } | null;
+  alternateRoute: { path: google.maps.LatLngLiteral[], time: number, addedTime: number } | null;
+  onSelectSaferRoute: () => void;
 }
 
 export const NavigationModals: React.FC<NavigationModalsProps> = (props) => {
@@ -39,6 +41,8 @@ export const NavigationModals: React.FC<NavigationModalsProps> = (props) => {
         onClose={props.onCloseCrimeModal}
         onSwitchPath={props.onSwitchPath}
         currentUserLocation={props.currentUserLocation}
+        alternateRoute={props.alternateRoute}
+        onSelectSaferRoute={props.onSelectSaferRoute}
       />
     </div>
   );

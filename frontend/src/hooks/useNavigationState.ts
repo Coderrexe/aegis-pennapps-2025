@@ -7,9 +7,10 @@ interface UseNavigationStateProps {
   directionsResponse: google.maps.DirectionsResult | null;
   setDirectionsResponse: (response: google.maps.DirectionsResult | null) => void;
   navigationSteps: google.maps.DirectionsStep[];
+  setNavigationSteps: (steps: google.maps.DirectionsStep[]) => void;
 }
 
-export const useNavigationState = ({ map, currentLocation, directionsResponse, setDirectionsResponse, navigationSteps }: UseNavigationStateProps) => {
+export const useNavigationState = ({ map, currentLocation, directionsResponse, setDirectionsResponse, navigationSteps, setNavigationSteps }: UseNavigationStateProps) => {
   const [isNavigating, setIsNavigating] = useState(false);
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [userHeading, setUserHeading] = useState<number>(0);
@@ -23,6 +24,9 @@ export const useNavigationState = ({ map, currentLocation, directionsResponse, s
   const [simulatedLocation, setSimulatedLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [locationForCrimeQuery, setLocationForCrimeQuery] = useState<{ lat: number; lng: number } | null>(null);
   const [detectedCrime, setDetectedCrime] = useState<any | null>(null); // Using 'any' for now for simplicity
+  const [alternateRoute, setAlternateRoute] = useState<{ path: google.maps.LatLngLiteral[], time: number, addedTime: number } | null>(null);
+  const [showAlternateRoute, setShowAlternateRoute] = useState(false);
+  const dismissedCrimeIds = useRef(new Set<string | number>());
 
   useEffect(() => {
     if (simulatedLocation) {
@@ -161,45 +165,153 @@ export const useNavigationState = ({ map, currentLocation, directionsResponse, s
 
     try {
       console.log(locationForCrimeQuery.lat, locationForCrimeQuery.lng);
-      const response = await apiClient.get(`/api/crime/nearby?lat=${locationForCrimeQuery.lat}&lng=${locationForCrimeQuery.lng}&radius=1609&hours=168`);
+      const response = await apiClient.get(`/api/crime/nearby?lat=${locationForCrimeQuery.lat}&lng=${locationForCrimeQuery.lng}&radius=10000&hours=168`);
       if (response.data && response.data.total_incidents > 0) {
         const mostRelevantCrime = response.data.incidents[0];
-        setDetectedCrime(mostRelevantCrime);
+        if (!dismissedCrimeIds.current.has(mostRelevantCrime.id)) {
+          console.log('Crime detected:', mostRelevantCrime);
+          setDetectedCrime(mostRelevantCrime);
+        } else {
+          console.log('Ignoring already dismissed crime:', mostRelevantCrime.id);
+        }
       }
     } catch (error) {
       console.error('Error checking for nearby crimes:', error);
     }
   }, [locationForCrimeQuery, detectedCrime]);
 
-  const handleSwitchPath = useCallback(async () => {
+      const handleSwitchPath = useCallback(async () => {
     if (!locationForCrimeQuery || !directionsResponse) return;
 
     const destination = directionsResponse.routes[0].legs[0].end_location;
-
     try {
-      const response = await apiClient.post('/api/algorithm/run-astar', {
-        origin: {
-          lat: locationForCrimeQuery.lat,
-          lng: locationForCrimeQuery.lng,
-        },
-        destination: {
-          lat: destination.lat(),
-          lng: destination.lng(),
-        },
-        preference: 'safety',
-      });
+      console.log("Coords: ", locationForCrimeQuery.lat, locationForCrimeQuery.lng, destination.lat(), destination.lng());
 
-      if (response.data) {
-        console.log('New directions from API:', response.data);
-        setDirectionsResponse(response.data);
-        setDetectedCrime(null);
+      const endpoint = '/api/algorithm/find-path';
+      const params = {
+        start_lat: locationForCrimeQuery.lat,
+        start_lon: locationForCrimeQuery.lng,
+        end_lat: destination.lat(),
+        end_lon: destination.lng(),
+      };
+
+      const queryString = new URLSearchParams(params as any).toString();
+      console.log(`POST ${apiClient.defaults.baseURL}${endpoint}?${queryString}`);
+
+      const response = await apiClient.post(endpoint, params);
+
+      if (response.data && response.data.paths && response.data.paths.length > 0) {
+        const safestPath = response.data.paths[0];
+        console.log('Safest path selected:', safestPath);
+
+        const startCoord = { lat: locationForCrimeQuery.lat, lng: locationForCrimeQuery.lng };
+        const endCoord = { lat: destination.lat(), lng: destination.lng() };
+        const unorderedPath: google.maps.LatLngLiteral[] = safestPath.path_coordinates.map((coord: [number, number]) => ({ lat: coord[0], lng: coord[1] }));
+
+        // Simplified greedy nearest-neighbor sorting
+        const sortedPath: google.maps.LatLngLiteral[] = [];
+        if (unorderedPath.length > 0) {
+          sortedPath.push(unorderedPath.shift()!);
+          while (unorderedPath.length > 0) {
+            let nearestPointIndex = -1;
+            let minDistance = Infinity;
+            const lastPoint = sortedPath[sortedPath.length - 1];
+
+            unorderedPath.forEach((point: google.maps.LatLngLiteral, index: number) => {
+              const distance = Math.sqrt(Math.pow(point.lat - lastPoint.lat, 2) + Math.pow(point.lng - lastPoint.lng, 2));
+              if (distance < minDistance) {
+                minDistance = distance;
+                nearestPointIndex = index;
+              }
+            });
+
+            if (nearestPointIndex !== -1) {
+              sortedPath.push(unorderedPath.splice(nearestPointIndex, 1)[0]);
+            } else {
+              break; // Should not happen, but as a safeguard
+            }
+          }
+        }
+
+        const newPathCoordinates = [
+          startCoord,
+          ...sortedPath,
+          endCoord
+        ];
+
+        const originalDuration = directionsResponse.routes[0].legs[0].duration?.value || 0;
+        const addedTimeInMinutes = Math.round((safestPath.time - originalDuration) / 60);
+
+        setAlternateRoute({
+          path: newPathCoordinates,
+          time: safestPath.time,
+          addedTime: addedTimeInMinutes > 0 ? addedTimeInMinutes : 0,
+        });
+        setShowAlternateRoute(true);
+
+        console.log(`Alternate route is ${addedTimeInMinutes > 0 ? addedTimeInMinutes : 'no'} minutes longer.`);
+
       } else {
-        console.error('Failed to get a safer route');
+        console.error('Failed to get an alternate route');
       }
     } catch (error) {
       console.error('Error switching paths:', error);
     }
-  }, [locationForCrimeQuery, directionsResponse, setDirectionsResponse, setDetectedCrime]);
+  }, [locationForCrimeQuery, directionsResponse]);
+
+  const dismissCrime = useCallback((crimeId: string | number) => {
+    dismissedCrimeIds.current.add(crimeId);
+    setDetectedCrime(null);
+    setShowAlternateRoute(false);
+    setAlternateRoute(null);
+  }, []);
+
+  const selectAlternateRoute = useCallback(() => {
+    if (!alternateRoute || !map) return;
+
+    // Immediately hide the old route for a cleaner transition
+    setDirectionsResponse(null);
+
+    const directionsService = new window.google.maps.DirectionsService();
+
+    directionsService.route(
+      {
+        origin: alternateRoute.path[0],
+        destination: alternateRoute.path[alternateRoute.path.length - 1],
+        waypoints: (() => {
+          const waypoints = alternateRoute.path.slice(1, -1);
+          const maxWaypoints = 25;
+          if (waypoints.length <= maxWaypoints) {
+            return waypoints.map(p => ({ location: p, stopover: false }));
+          }
+
+          const sampledWaypoints = [];
+          const step = Math.ceil(waypoints.length / maxWaypoints);
+          for (let i = 0; i < waypoints.length; i += step) {
+            sampledWaypoints.push(waypoints[i]);
+          }
+          return sampledWaypoints.map(p => ({ location: p, stopover: false }));
+        })(),
+        travelMode: google.maps.TravelMode.DRIVING,
+      },
+      (result, status) => {
+        if (status === google.maps.DirectionsStatus.OK && result) {
+          setDirectionsResponse(result);
+          if (result.routes[0] && result.routes[0].legs[0]) {
+            setNavigationSteps(result.routes[0].legs[0].steps);
+          }
+          // Reset states after selecting the new route
+          setShowAlternateRoute(false);
+          setAlternateRoute(null);
+          if (detectedCrime) {
+            dismissCrime(detectedCrime.id);
+          }
+        } else {
+          console.error(`Error fetching new directions: ${status}`);
+        }
+      }
+    );
+  }, [alternateRoute, map, setDirectionsResponse, detectedCrime, dismissCrime, setNavigationSteps]);
 
   const handleStartNavigation = useCallback(() => {
     if (!currentLocation || !directionsResponse || !navigationSteps.length) {
@@ -296,5 +408,9 @@ export const useNavigationState = ({ map, currentLocation, directionsResponse, s
     detectedCrime,
     setDetectedCrime,
     handleSwitchPath,
+    alternateRoute,
+    showAlternateRoute,
+    selectAlternateRoute,
+    dismissCrime,
   };
 };
