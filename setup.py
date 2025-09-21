@@ -6,20 +6,20 @@ import os
 extension = Extension(
     # This is the name of the module as it will be imported in Python,
     # e.g., from algorithm.astar_solver import run_astar_solver
-    name="algorithm.astar_solver",
+    name="backend.algorithm.astar_solver",
     
     # List of source files to compile.
     # This includes the Cython wrapper and the C++ implementation file.
     sources=[
-        "algorithm/astar_wrapper.pyx",
-        "algorithm/multi-objective-astar.cpp"
+        "backend/algorithm/astar_wrapper.pyx",
+        "backend/algorithm/multi-objective-astar.cpp"
     ],
     
     # Specify that this is a C++ extension
     language="c++",
     
     # Add the directory containing the .hpp header file to the include path
-    include_dirs=[os.path.abspath("algorithm")],
+    include_dirs=[os.path.abspath("backend/algorithm")],
     
     # Pass compiler arguments. -std=c++17 is important for modern C++ features.
     extra_compile_args=["-std=c++17", "-O3"], # -O3 for optimization
