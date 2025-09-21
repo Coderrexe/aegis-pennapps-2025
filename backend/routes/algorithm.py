@@ -9,8 +9,8 @@ algorithm_bp = Blueprint('algorithm_bp', __name__)
 logger = logging.getLogger(__name__)
 
 # Load the OSM data once when the module is imported
-DATA_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'backend', 'data', 'OSM-NTL-CRIME_combined.csv')
-EDGES_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'backend', 'data', 'edges.csv')
+DATA_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'data', 'OSM-NTL-CRIME_combined.csv')
+EDGES_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'data', 'edges.csv')
 osm_data = None
 edges_data = None
 

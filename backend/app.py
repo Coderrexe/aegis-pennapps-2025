@@ -1,4 +1,3 @@
-
 import os
 import sys
 from flask import Flask, jsonify
@@ -38,8 +37,7 @@ CORS(
     resources={r"/*": {"origins": get_allowed_origins()}},
     supports_credentials=True,
     methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allow_headers=["Content-Type", "Authorization"], 
-    expose_headers=["Content-Type", "Authorization"]
+    allow_headers="*"
 )
 
 # === Logging ===
