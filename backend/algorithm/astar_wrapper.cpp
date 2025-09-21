@@ -15,16 +15,16 @@
         ],
         "include_dirs": [
             "backend/algorithm",
-            "/Users/williamfeng/Documents/pennapps-2025/algorithm"
+            "/Users/williamfeng/Documents/pennapps-2025/backend/algorithm"
         ],
         "language": "c++",
-        "name": "algorithm.astar_solver",
+        "name": "backend.algorithm.astar_solver",
         "sources": [
             "backend/algorithm/astar_wrapper.pyx",
             "backend/algorithm/multi-objective-astar.cpp"
         ]
     },
-    "module_name": "algorithm.astar_solver"
+    "module_name": "backend.algorithm.astar_solver"
 }
 END: Cython Metadata */
 
@@ -1256,8 +1256,8 @@ static CYTHON_INLINE float __PYX_NAN() {
     #define __PYX_EXTERN_C extern "C++"
 #endif
 
-#define __PYX_HAVE__algorithm__astar_solver
-#define __PYX_HAVE_API__algorithm__astar_solver
+#define __PYX_HAVE__backend__algorithm__astar_solver
+#define __PYX_HAVE_API__backend__algorithm__astar_solver
 /* Early includes */
 #include "ios"
 #include "new"
@@ -2125,7 +2125,7 @@ static int __Pyx_InitStrings(__Pyx_StringTabEntry *t);
 
 /* Module declarations from "libcpp.string" */
 
-/* Module declarations from "algorithm.astar_solver" */
+/* Module declarations from "backend.algorithm.astar_solver" */
 static std::vector<double>  __pyx_convert_vector_from_py_double(PyObject *); /*proto*/
 static std::vector<int>  __pyx_convert_vector_from_py_int(PyObject *); /*proto*/
 static std::vector<std::vector<int> >  __pyx_convert_vector_from_py_std_3a__3a_vector_3c_int_3e___(PyObject *); /*proto*/
@@ -2137,11 +2137,11 @@ static CYTHON_INLINE PyObject *__pyx_convert_PyByteArray_string_to_py_6libcpp_6s
 static PyObject *__pyx_convert_vector_to_py_int(std::vector<int>  const &); /*proto*/
 /* #### Code section: typeinfo ### */
 /* #### Code section: before_global_var ### */
-#define __Pyx_MODULE_NAME "algorithm.astar_solver"
-extern int __pyx_module_is_main_algorithm__astar_solver;
-int __pyx_module_is_main_algorithm__astar_solver = 0;
+#define __Pyx_MODULE_NAME "backend.algorithm.astar_solver"
+extern int __pyx_module_is_main_backend__algorithm__astar_solver;
+int __pyx_module_is_main_backend__algorithm__astar_solver = 0;
 
-/* Implementation of "algorithm.astar_solver" */
+/* Implementation of "backend.algorithm.astar_solver" */
 /* #### Code section: global_var ### */
 static PyObject *__pyx_builtin_MemoryError;
 static PyObject *__pyx_builtin_range;
@@ -2172,10 +2172,10 @@ static const char __pyx_k_is_coroutine[] = "_is_coroutine";
 static const char __pyx_k_run_astar_solver[] = "run_astar_solver";
 static const char __pyx_k_asyncio_coroutines[] = "asyncio.coroutines";
 static const char __pyx_k_cline_in_traceback[] = "cline_in_traceback";
-static const char __pyx_k_algorithm_astar_solver[] = "algorithm.astar_solver";
+static const char __pyx_k_backend_algorithm_astar_solver[] = "backend.algorithm.astar_solver";
 static const char __pyx_k_backend_algorithm_astar_wrapper[] = "backend/algorithm/astar_wrapper.pyx";
 /* #### Code section: decls ### */
-static PyObject *__pyx_pf_9algorithm_12astar_solver_run_astar_solver(CYTHON_UNUSED PyObject *__pyx_self, int __pyx_v_N, int __pyx_v_M, PyObject *__pyx_v_light_py, PyObject *__pyx_v_crime_py, PyObject *__pyx_v_input_py, int __pyx_v_s, int __pyx_v_t); /* proto */
+static PyObject *__pyx_pf_7backend_9algorithm_12astar_solver_run_astar_solver(CYTHON_UNUSED PyObject *__pyx_self, int __pyx_v_N, int __pyx_v_M, PyObject *__pyx_v_light_py, PyObject *__pyx_v_crime_py, PyObject *__pyx_v_input_py, int __pyx_v_s, int __pyx_v_t); /* proto */
 /* #### Code section: late_includes ### */
 /* #### Code section: module_state ### */
 typedef struct {
@@ -2215,8 +2215,8 @@ typedef struct {
   PyObject *__pyx_n_s_MemoryError;
   PyObject *__pyx_n_s_N;
   PyObject *__pyx_n_s__3;
-  PyObject *__pyx_n_s_algorithm_astar_solver;
   PyObject *__pyx_n_s_asyncio_coroutines;
+  PyObject *__pyx_n_s_backend_algorithm_astar_solver;
   PyObject *__pyx_kp_s_backend_algorithm_astar_wrapper;
   PyObject *__pyx_n_s_cline_in_traceback;
   PyObject *__pyx_n_s_crime_cpp;
@@ -2288,8 +2288,8 @@ static int __pyx_m_clear(PyObject *m) {
   Py_CLEAR(clear_module_state->__pyx_n_s_MemoryError);
   Py_CLEAR(clear_module_state->__pyx_n_s_N);
   Py_CLEAR(clear_module_state->__pyx_n_s__3);
-  Py_CLEAR(clear_module_state->__pyx_n_s_algorithm_astar_solver);
   Py_CLEAR(clear_module_state->__pyx_n_s_asyncio_coroutines);
+  Py_CLEAR(clear_module_state->__pyx_n_s_backend_algorithm_astar_solver);
   Py_CLEAR(clear_module_state->__pyx_kp_s_backend_algorithm_astar_wrapper);
   Py_CLEAR(clear_module_state->__pyx_n_s_cline_in_traceback);
   Py_CLEAR(clear_module_state->__pyx_n_s_crime_cpp);
@@ -2339,8 +2339,8 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
   Py_VISIT(traverse_module_state->__pyx_n_s_MemoryError);
   Py_VISIT(traverse_module_state->__pyx_n_s_N);
   Py_VISIT(traverse_module_state->__pyx_n_s__3);
-  Py_VISIT(traverse_module_state->__pyx_n_s_algorithm_astar_solver);
   Py_VISIT(traverse_module_state->__pyx_n_s_asyncio_coroutines);
+  Py_VISIT(traverse_module_state->__pyx_n_s_backend_algorithm_astar_solver);
   Py_VISIT(traverse_module_state->__pyx_kp_s_backend_algorithm_astar_wrapper);
   Py_VISIT(traverse_module_state->__pyx_n_s_cline_in_traceback);
   Py_VISIT(traverse_module_state->__pyx_n_s_crime_cpp);
@@ -2406,8 +2406,8 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
 #define __pyx_n_s_MemoryError __pyx_mstate_global->__pyx_n_s_MemoryError
 #define __pyx_n_s_N __pyx_mstate_global->__pyx_n_s_N
 #define __pyx_n_s__3 __pyx_mstate_global->__pyx_n_s__3
-#define __pyx_n_s_algorithm_astar_solver __pyx_mstate_global->__pyx_n_s_algorithm_astar_solver
 #define __pyx_n_s_asyncio_coroutines __pyx_mstate_global->__pyx_n_s_asyncio_coroutines
+#define __pyx_n_s_backend_algorithm_astar_solver __pyx_mstate_global->__pyx_n_s_backend_algorithm_astar_solver
 #define __pyx_kp_s_backend_algorithm_astar_wrapper __pyx_mstate_global->__pyx_kp_s_backend_algorithm_astar_wrapper
 #define __pyx_n_s_cline_in_traceback __pyx_mstate_global->__pyx_n_s_cline_in_traceback
 #define __pyx_n_s_crime_cpp __pyx_mstate_global->__pyx_n_s_crime_cpp
@@ -3246,16 +3246,16 @@ static PyObject *__pyx_convert_vector_to_py_int(std::vector<int>  const &__pyx_v
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_9algorithm_12astar_solver_1run_astar_solver(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_7backend_9algorithm_12astar_solver_1run_astar_solver(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_9algorithm_12astar_solver_run_astar_solver, "\n    A Python wrapper for the C++ multi-objective A* solver.\n\n    Args:\n        N (int): Number of nodes.\n        M (int): Number of edges.\n        light_py (list[float]): List of light values for each node.\n        crime_py (list[int]): List of crime flags (0 or 1) for each node.\n        input_py (list[list[int]]): List of edges, where each edge is [u, v, time_cost].\n        s (int): Start node index.\n        t (int): Target node index.\n\n    Returns:\n        list[dict]: A list of dictionaries, each representing a found path.\n    ");
-static PyMethodDef __pyx_mdef_9algorithm_12astar_solver_1run_astar_solver = {"run_astar_solver", (PyCFunction)(void*)(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_9algorithm_12astar_solver_1run_astar_solver, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_9algorithm_12astar_solver_run_astar_solver};
-static PyObject *__pyx_pw_9algorithm_12astar_solver_1run_astar_solver(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_7backend_9algorithm_12astar_solver_run_astar_solver, "\n    A Python wrapper for the C++ multi-objective A* solver.\n\n    Args:\n        N (int): Number of nodes.\n        M (int): Number of edges.\n        light_py (list[float]): List of light values for each node.\n        crime_py (list[int]): List of crime flags (0 or 1) for each node.\n        input_py (list[list[int]]): List of edges, where each edge is [u, v, time_cost].\n        s (int): Start node index.\n        t (int): Target node index.\n\n    Returns:\n        list[dict]: A list of dictionaries, each representing a found path.\n    ");
+static PyMethodDef __pyx_mdef_7backend_9algorithm_12astar_solver_1run_astar_solver = {"run_astar_solver", (PyCFunction)(void*)(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_7backend_9algorithm_12astar_solver_1run_astar_solver, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_7backend_9algorithm_12astar_solver_run_astar_solver};
+static PyObject *__pyx_pw_7backend_9algorithm_12astar_solver_1run_astar_solver(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -3415,14 +3415,14 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
       __Pyx_Arg_XDECREF_FASTCALL(values[__pyx_temp]);
     }
   }
-  __Pyx_AddTraceback("algorithm.astar_solver.run_astar_solver", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("backend.algorithm.astar_solver.run_astar_solver", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
   if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_light_py), (&PyList_Type), 1, "light_py", 1))) __PYX_ERR(1, 18, __pyx_L1_error)
   if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_crime_py), (&PyList_Type), 1, "crime_py", 1))) __PYX_ERR(1, 18, __pyx_L1_error)
   if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_input_py), (&PyList_Type), 1, "input_py", 1))) __PYX_ERR(1, 18, __pyx_L1_error)
-  __pyx_r = __pyx_pf_9algorithm_12astar_solver_run_astar_solver(__pyx_self, __pyx_v_N, __pyx_v_M, __pyx_v_light_py, __pyx_v_crime_py, __pyx_v_input_py, __pyx_v_s, __pyx_v_t);
+  __pyx_r = __pyx_pf_7backend_9algorithm_12astar_solver_run_astar_solver(__pyx_self, __pyx_v_N, __pyx_v_M, __pyx_v_light_py, __pyx_v_crime_py, __pyx_v_input_py, __pyx_v_s, __pyx_v_t);
 
   /* function exit code */
   goto __pyx_L0;
@@ -3439,7 +3439,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_9algorithm_12astar_solver_run_astar_solver(CYTHON_UNUSED PyObject *__pyx_self, int __pyx_v_N, int __pyx_v_M, PyObject *__pyx_v_light_py, PyObject *__pyx_v_crime_py, PyObject *__pyx_v_input_py, int __pyx_v_s, int __pyx_v_t) {
+static PyObject *__pyx_pf_7backend_9algorithm_12astar_solver_run_astar_solver(CYTHON_UNUSED PyObject *__pyx_self, int __pyx_v_N, int __pyx_v_M, PyObject *__pyx_v_light_py, PyObject *__pyx_v_crime_py, PyObject *__pyx_v_input_py, int __pyx_v_s, int __pyx_v_t) {
   std::vector<double>  __pyx_v_light_cpp;
   std::vector<int>  __pyx_v_crime_cpp;
   std::vector<std::vector<int> >  __pyx_v_input_cpp;
@@ -3622,7 +3622,7 @@ static PyObject *__pyx_pf_9algorithm_12astar_solver_run_astar_solver(CYTHON_UNUS
   __Pyx_XDECREF(__pyx_t_4);
   __Pyx_XDECREF(__pyx_t_7);
   __Pyx_XDECREF(__pyx_t_8);
-  __Pyx_AddTraceback("algorithm.astar_solver.run_astar_solver", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("backend.algorithm.astar_solver.run_astar_solver", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_py_results);
@@ -3651,8 +3651,8 @@ static int __Pyx_CreateStringTabAndInitStrings(void) {
     {&__pyx_n_s_MemoryError, __pyx_k_MemoryError, sizeof(__pyx_k_MemoryError), 0, 0, 1, 1},
     {&__pyx_n_s_N, __pyx_k_N, sizeof(__pyx_k_N), 0, 0, 1, 1},
     {&__pyx_n_s__3, __pyx_k__3, sizeof(__pyx_k__3), 0, 0, 1, 1},
-    {&__pyx_n_s_algorithm_astar_solver, __pyx_k_algorithm_astar_solver, sizeof(__pyx_k_algorithm_astar_solver), 0, 0, 1, 1},
     {&__pyx_n_s_asyncio_coroutines, __pyx_k_asyncio_coroutines, sizeof(__pyx_k_asyncio_coroutines), 0, 0, 1, 1},
+    {&__pyx_n_s_backend_algorithm_astar_solver, __pyx_k_backend_algorithm_astar_solver, sizeof(__pyx_k_backend_algorithm_astar_solver), 0, 0, 1, 1},
     {&__pyx_kp_s_backend_algorithm_astar_wrapper, __pyx_k_backend_algorithm_astar_wrapper, sizeof(__pyx_k_backend_algorithm_astar_wrapper), 0, 0, 1, 0},
     {&__pyx_n_s_cline_in_traceback, __pyx_k_cline_in_traceback, sizeof(__pyx_k_cline_in_traceback), 0, 0, 1, 1},
     {&__pyx_n_s_crime_cpp, __pyx_k_crime_cpp, sizeof(__pyx_k_crime_cpp), 0, 0, 1, 1},
@@ -4040,14 +4040,14 @@ if (!__Pyx_RefNanny) {
   #if PY_MAJOR_VERSION < 3 && (__PYX_DEFAULT_STRING_ENCODING_IS_ASCII || __PYX_DEFAULT_STRING_ENCODING_IS_DEFAULT)
   if (__Pyx_init_sys_getdefaultencoding_params() < 0) __PYX_ERR(1, 1, __pyx_L1_error)
   #endif
-  if (__pyx_module_is_main_algorithm__astar_solver) {
+  if (__pyx_module_is_main_backend__algorithm__astar_solver) {
     if (PyObject_SetAttr(__pyx_m, __pyx_n_s_name_2, __pyx_n_s_main) < 0) __PYX_ERR(1, 1, __pyx_L1_error)
   }
   #if PY_MAJOR_VERSION >= 3
   {
     PyObject *modules = PyImport_GetModuleDict(); if (unlikely(!modules)) __PYX_ERR(1, 1, __pyx_L1_error)
-    if (!PyDict_GetItemString(modules, "algorithm.astar_solver")) {
-      if (unlikely((PyDict_SetItemString(modules, "algorithm.astar_solver", __pyx_m) < 0))) __PYX_ERR(1, 1, __pyx_L1_error)
+    if (!PyDict_GetItemString(modules, "backend.algorithm.astar_solver")) {
+      if (unlikely((PyDict_SetItemString(modules, "backend.algorithm.astar_solver", __pyx_m) < 0))) __PYX_ERR(1, 1, __pyx_L1_error)
     }
   }
   #endif
@@ -4075,7 +4075,7 @@ if (!__Pyx_RefNanny) {
  *     """
  *     A Python wrapper for the C++ multi-objective A* solver.
  */
-  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_9algorithm_12astar_solver_1run_astar_solver, 0, __pyx_n_s_run_astar_solver, NULL, __pyx_n_s_algorithm_astar_solver, __pyx_d, ((PyObject *)__pyx_codeobj__2)); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 18, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_7backend_9algorithm_12astar_solver_1run_astar_solver, 0, __pyx_n_s_run_astar_solver, NULL, __pyx_n_s_backend_algorithm_astar_solver, __pyx_d, ((PyObject *)__pyx_codeobj__2)); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 18, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_run_astar_solver, __pyx_t_2) < 0) __PYX_ERR(1, 18, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
@@ -4097,7 +4097,7 @@ if (!__Pyx_RefNanny) {
   __Pyx_XDECREF(__pyx_t_2);
   if (__pyx_m) {
     if (__pyx_d && stringtab_initialized) {
-      __Pyx_AddTraceback("init algorithm.astar_solver", __pyx_clineno, __pyx_lineno, __pyx_filename);
+      __Pyx_AddTraceback("init backend.algorithm.astar_solver", __pyx_clineno, __pyx_lineno, __pyx_filename);
     }
     #if !CYTHON_USE_MODULE_STATE
     Py_CLEAR(__pyx_m);
@@ -4111,7 +4111,7 @@ if (!__Pyx_RefNanny) {
     }
     #endif
   } else if (!PyErr_Occurred()) {
-    PyErr_SetString(PyExc_ImportError, "init algorithm.astar_solver");
+    PyErr_SetString(PyExc_ImportError, "init backend.algorithm.astar_solver");
   }
   __pyx_L0:;
   __Pyx_RefNannyFinishContext();
