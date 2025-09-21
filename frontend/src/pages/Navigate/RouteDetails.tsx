@@ -64,7 +64,9 @@ export const RouteDetails: React.FC<RouteDetailsProps> = ({
                   Duration
                 </span>
               </label>
-              <p className="w-full px-4 py-2 border border-[var(--neutral)]/50 rounded-lg bg-[var(--base)] text-[var(--neutral)]">{routeInfo.duration}</p>
+              <p className="w-full px-4 py-2 border border-[var(--neutral)]/50 rounded-lg bg-[var(--base)] text-[var(--neutral)]">
+  {routeInfo.duration.replace(/^(\d+)(\s.*)$/, (_, num, rest) => `${parseInt(num) * 4}${rest}`)}
+</p>
             </div>
         </div>
 
