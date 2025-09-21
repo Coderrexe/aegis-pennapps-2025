@@ -38,7 +38,8 @@ CORS(
     resources={r"/*": {"origins": get_allowed_origins()}},
     supports_credentials=True,
     methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allow_headers="*"
+    allow_headers=["Content-Type", "Authorization"], 
+    expose_headers=["Content-Type", "Authorization"]
 )
 
 # === Logging ===
