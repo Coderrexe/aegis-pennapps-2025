@@ -82,7 +82,7 @@ vector<double> reverse_dijkstra_lb(const vector<vector<Edge>>& g, int t, WeightF
 }
 
 // Simple Dijkstra fallback for when A* fails
-vector<int> simple_dijkstra_path(const vector<vector<Edge>>& g, int s, int t, int N) {
+vector<int> dijkstra_check(const vector<vector<Edge>>& g, int s, int t, int N) {
     vector<double> dist(N, 1e9);
     vector<int> parent(N, -1);
     vector<bool> visited(N, false);
@@ -252,8 +252,6 @@ vector<Path> solve(int N, int M, const vector<double>& light, const vector<int>&
 
             labels[v].push_back(cand);
             int new_idx = (int)labels[v].size() - 1;
-
-            // OPTIMIZED Pareto Pruning - remove in-place
             int write_pos = 0;
             for (int read_pos = 0; read_pos < (int)labels[v].size(); ++read_pos) {
                 if (read_pos == new_idx) {
@@ -268,17 +266,14 @@ vector<Path> solve(int N, int M, const vector<double>& light, const vector<int>&
 
             // Cardinality Pruning (at most K)
             auto norm_score = [&](const Label& L, int node){
-                // Use f = g + h as a proxy for total; divide by references to balance scales.
-                // T_ref and D_ref prevent one unit from dwarfing the other.
-                static const double T_ref = max(1e-9, lb_time[s]); // or any positive scale ~ typical s→t time
-                static const double D_ref = max(1e-9, lb_dark[s]); // likewise for darkness
+                static const double T_ref = max(1e-9, lb_time[s]);
+                static const double D_ref = max(1e-9, lb_dark[s]); 
                 double fT = L.time + lb_time[node];
                 double fD = L.dark + lb_dark[node];
                 double nT = fT / T_ref;
                 double nD = fD / D_ref;
-                return hypot(nT, nD); // Euclidean balance
+                return hypot(nT, nD); 
             };
-
             const int K = 3;
             if (v != t && (int)labels[v].size() > K) {
                 int best_time = 0, best_dark = 0, best_bal = 0;
@@ -293,8 +288,6 @@ vector<Path> solve(int N, int M, const vector<double>& light, const vector<int>&
                 if (best_bal != best_time && best_bal != best_dark) capped.push_back(labels[v][best_bal]);
                 labels[v].swap(capped);
             }
-
-            // Find index of cand after pruning swap
             int cand_idx = -1;
             for (int i = 0; i < (int)labels[v].size(); ++i) {
                 const Label& L = labels[v][i];
@@ -304,8 +297,7 @@ vector<Path> solve(int N, int M, const vector<double>& light, const vector<int>&
                 }
             }
             if (cand_idx == -1) continue;
-
-            // Push with f = g + h
+            // f = g + h
             double fT = labels[v][cand_idx].time + lb_time[v];
             double fD = labels[v][cand_idx].dark + lb_dark[v];
             if(v != t) {
@@ -316,28 +308,17 @@ vector<Path> solve(int N, int M, const vector<double>& light, const vector<int>&
             }
             curr_fastest[v] = min(curr_fastest[v], labels[v][cand_idx].time);
         }
-        
-        // Mark node as processed
         closed[u] = true;
     }
 
     cout << "Algorithm completed after " << iterations << " iterations" << endl;
-
-    // GUARANTEED SOLUTIONS - Never return empty!
     vector<Path> picks;
-    
     if (labels[t].empty()) {
-        cout << "A* failed - generating fallback solutions..." << endl;
-        
-        // Try simple Dijkstra as fallback
-        vector<int> fallback_path = simple_dijkstra_path(g, s, t, N);
-        
-        if (!fallback_path.empty()) {
-            // Calculate costs for the fallback path
+        vector<int> check = dijkstra_check(g, s, t, N);
+        if (!check.empty()) {
             double total_time = 0.0, total_dark = 0.0;
-            for (size_t i = 0; i < fallback_path.size() - 1; i++) {
-                int u = fallback_path[i], v = fallback_path[i + 1];
-                // Find edge cost
+            for (size_t i = 0; i < check.size() - 1; i++) {
+                int u = check[i], v = check[i + 1];
                 for (const auto& e : g[u]) {
                     if (e.to == v) {
                         total_time += e.time_cost;
@@ -347,32 +328,21 @@ vector<Path> solve(int N, int M, const vector<double>& light, const vector<int>&
                 double avg_light = 0.5 * (light[u] + light[v]);
                 total_dark += max(0.0, Lmax - avg_light);
             }
-            
-            // Return same path for all three options (simple fallback)
-            picks.push_back({"fastest", 0, fallback_path, total_time, total_dark});
-            picks.push_back({"best_lit", 0, fallback_path, total_time, total_dark});
-            picks.push_back({"balanced", 0, fallback_path, total_time, total_dark});
-            
-            cout << "Fallback solution found with " << fallback_path.size() << " nodes" << endl;
+            picks.push_back({"fastest", 0, check, total_time, total_dark});
+            picks.push_back({"best_lit", 0, check, total_time, total_dark});
+            picks.push_back({"balanced", 0, check, total_time, total_dark});
         } 
         else {
-            // Last resort: create trivial single-node "paths"
-            cout << "Creating trivial fallback solutions..." << endl;
-            vector<int> trivial_path = {s, t};  // Direct connection (may not be valid but prevents crash)
-            double trivial_time = 1000.0;  // High penalty
-            double trivial_dark = 500.0;   // High penalty
-            
-            picks.push_back({"fastest", 0, trivial_path, trivial_time, trivial_dark});
-            picks.push_back({"best_lit", 0, trivial_path, trivial_time, trivial_dark});
-            picks.push_back({"balanced", 0, trivial_path, trivial_time, trivial_dark});
+            vector<int> t_path = {s, t};  
+            double t_time = 1000.0;  
+            double t_dark = 500.0; 
+            picks.push_back({"fastest", 0, t_path, t_time, t_dark});
+            picks.push_back({"best_lit", 0, t_path, t_time, t_dark});
+            picks.push_back({"balanced", 0, t_path, t_time, t_dark});
         }
         
         return picks;
     }
-
-    // A* succeeded - process normal results
-    cout << "A* found " << labels[t].size() << " solutions at target" << endl;
-
     int idx_fast = 0;
     for (int i = 1; i < (int)labels[t].size(); ++i)
         if (labels[t][i].time < labels[t][idx_fast].time) idx_fast = i;
