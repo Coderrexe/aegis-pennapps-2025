@@ -45,7 +45,7 @@ export const useNavigationState = ({ map, currentLocation, directionsResponse, s
       const distanceInMiles = (totalDistance / 1000) * 0.621371;
       setRemainingDistance(`${distanceInMiles.toFixed(1)} mi`);
 
-      const durationInMinutes = Math.round(totalDuration / 60);
+      const durationInMinutes = Math.round(totalDuration / 60) * 4;
       setRemainingTime(`${durationInMinutes} min`);
     }
   }, [currentStepIndex, isNavigating, navigationSteps]);
