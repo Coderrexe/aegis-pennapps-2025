@@ -161,7 +161,7 @@ export const useNavigationState = ({ map, currentLocation, directionsResponse, s
 
     try {
       console.log(locationForCrimeQuery.lat, locationForCrimeQuery.lng);
-      const response = await apiClient.get(`/api/crime/nearby?lat=${locationForCrimeQuery.lat}&lng=${locationForCrimeQuery.lng}&radius=1609&minutes=30`);
+      const response = await apiClient.get(`/api/crime/nearby?lat=${locationForCrimeQuery.lat}&lng=${locationForCrimeQuery.lng}&radius=1609&hours=168`);
       if (response.data && response.data.total_incidents > 0) {
         const mostRelevantCrime = response.data.incidents[0];
         setDetectedCrime(mostRelevantCrime);

@@ -21,7 +21,7 @@ interface CrimeDetectedModalProps {
 }
 
 export const CrimeDetectedModal: React.FC<CrimeDetectedModalProps> = ({ crime, onClose, onSwitchPath, currentUserLocation }) => {
-  const [progress, setProgress] = useState(100);
+    const [progress, setProgress] = useState(100);
   const [placeName, setPlaceName] = useState<string | null>(null);
   const [distance, setDistance] = useState<string | null>(null);
   const [timeAgo, setTimeAgo] = useState<string | null>(null);
@@ -30,7 +30,7 @@ export const CrimeDetectedModal: React.FC<CrimeDetectedModalProps> = ({ crime, o
   useEffect(() => {
     if (crime && playedSoundForCrimeIdRef.current !== crime.id) {
       const audio = new Audio('/alert.mp3');
-      audio.play().catch(error => alert('Error playing audio:', error));
+      audio.play().catch(error => console.error('Error playing audio:', error));
       playedSoundForCrimeIdRef.current = crime.id;
       setProgress(100); // Reset progress when a new crime is shown
       const timer = setInterval(() => {
@@ -87,7 +87,7 @@ export const CrimeDetectedModal: React.FC<CrimeDetectedModalProps> = ({ crime, o
       </div>
       {/* Header */}
       <div className="bg-red-500/10 px-4 py-2 flex items-center justify-between">
-        <h3 className="font-semibold text-red-400">Alert: Crime Detected Nearby</h3>
+        <h3 className="font-semibold text-red-400">Alert: Crime Detected</h3>
         <button onClick={onClose} className="w-6 h-6 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors">
           <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
         </button>

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { MuteToggleButton } from '../../components/MuteToggleButton';
 
 interface NavigationHeaderProps {
   searchPanelOpen: boolean;
@@ -19,12 +20,15 @@ export const NavigationHeader: React.FC<NavigationHeaderProps> = ({ searchPanelO
           <div className="h-4 md:h-6 w-px bg-transparent"></div>
           <h1 className="text-lg md:text-xl text-[var(--neutral)]">Aegis Navigation</h1>
         </div>
-        <button
-          onClick={() => setSearchPanelOpen(!searchPanelOpen)}
-          className="nav-link-style"
-        >
-          {searchPanelOpen ? 'Close' : 'Plan Route'}
-        </button>
+        <div className="flex items-center space-x-4">
+          <MuteToggleButton />
+          <button
+            onClick={() => setSearchPanelOpen(!searchPanelOpen)}
+            className="nav-link-style"
+          >
+            {searchPanelOpen ? 'Close' : 'Plan Route'}
+          </button>
+        </div>
       </div>
     </div>
   );

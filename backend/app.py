@@ -23,18 +23,10 @@ load_dotenv()
 app = Flask(__name__)
 
 # === CORS Setup ===
-def get_allowed_origins():
-    # Fix: closing quote for Vercel URL
-    origins = ["http://localhost:3000", "https://aeg1s.vercel.app"]
-    ngrok_url = os.environ.get("NGROK_URL")
-    if ngrok_url:
-        origins.append(ngrok_url)
-    return origins
-
-# Apply CORS to all routes
+# Enable CORS for all routes and all origins
 CORS(
     app,
-    resources={r"/*": {"origins": get_allowed_origins()}},
+    resources={r"/*": {"origins": "*"}},
     supports_credentials=True,
     methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers="*"
