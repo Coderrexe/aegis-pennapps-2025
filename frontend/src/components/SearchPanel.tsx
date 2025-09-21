@@ -39,7 +39,7 @@ export const SearchPanel: React.FC<SearchPanelProps> = ({
   return (
     <div className="absolute top-18 left-3 w-11/12 max-w-2xl z-40 bg-[var(--base)] text-[var(--neutral)] rounded-xl shadow-2xl border border-[var(--neutral)]/20 overflow-hidden max-h-[calc(100vh-5rem)] overflow-y-auto">
       <div className="p-4 md:p-6">
-        <h2 className="text-lg md:text-xl font-bold text-[var(--neutral)] mb-4">Plan Your Safe Route</h2>
+        <h2 className="text-lg md:text-xl text-[var(--neutral)] mb-4">Plan Your Safe Route</h2>
   
         <div className="space-y-4">
           <div className="flex flex-col md:flex-row md:items-end gap-3 md:gap-4">
@@ -93,7 +93,7 @@ export const SearchPanel: React.FC<SearchPanelProps> = ({
           <button
             onClick={onSearch}
             disabled={!startLocation || !endLocation || isCalculatingRoute}
-            className="w-full bg-[var(--primary)] hover:bg-opacity-80 disabled:bg-[var(--neutral)]/50 disabled:cursor-not-allowed text-[var(--neutral)] py-3 px-4 rounded-lg font-medium transition-colors shadow-md flex items-center justify-center space-x-2"
+            className="w-full bg-[var(--primary)] hover:bg-opacity-80 disabled:bg-[var(--neutral)]/50 disabled:cursor-not-allowed text-[var(--neutral)] py-3 px-4 rounded-lg transition-colors shadow-md flex items-center justify-center space-x-2"
           >
             {isCalculatingRoute && (
               <div className="w-4 h-4 border-2 border-[var(--neutral)] border-t-transparent rounded-full animate-spin"></div>

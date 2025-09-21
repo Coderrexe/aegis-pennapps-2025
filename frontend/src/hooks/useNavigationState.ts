@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 
 interface UseNavigationStateProps {
   map: google.maps.Map | null;
@@ -17,6 +17,21 @@ export const useNavigationState = ({ map, currentLocation, directionsResponse, n
   const watchIdRef = useRef<number | null>(null);
   const lastLocationRef = useRef<google.maps.LatLng | null>(null);
   const [isDemoMode, setIsDemoMode] = useState(false);
+  const [simulatedLocation, setSimulatedLocation] = useState<{ lat: number; lng: number } | null>(null);
+
+  useEffect(() => {
+    if (isNavigating && navigationSteps.length > 0) {
+      const remainingSteps = navigationSteps.slice(currentStepIndex);
+      const totalDistance = remainingSteps.reduce((sum, step) => sum + (step.distance?.value || 0), 0);
+      const totalDuration = remainingSteps.reduce((sum, step) => sum + (step.duration?.value || 0), 0);
+
+      const distanceInMiles = (totalDistance / 1000) * 0.621371;
+      setRemainingDistance(`${distanceInMiles.toFixed(1)} mi`);
+
+      const durationInMinutes = Math.round(totalDuration / 60);
+      setRemainingTime(`${durationInMinutes} min`);
+    }
+  }, [currentStepIndex, isNavigating, navigationSteps]);
 
   const calculateHeadingFromMovement = (oldPos: google.maps.LatLng, newPos: google.maps.LatLng): number => {
     const lat1 = oldPos.lat() * Math.PI / 180;
@@ -143,6 +158,7 @@ export const useNavigationState = ({ map, currentLocation, directionsResponse, n
       map.setZoom(17);
       map.setCenter(currentLocation);
     }
+    setSimulatedLocation(currentLocation);
 
     startLocationTracking();
     startHeadingTracking();
@@ -163,6 +179,36 @@ export const useNavigationState = ({ map, currentLocation, directionsResponse, n
     stopHeadingTracking();
   }, [map, stopLocationTracking, stopHeadingTracking]);
 
+  const handleNextStep = () => {
+    if (currentStepIndex < navigationSteps.length - 1) {
+      const nextStepIndex = currentStepIndex + 1;
+      setCurrentStepIndex(nextStepIndex);
+      const nextStep = navigationSteps[nextStepIndex];
+      if (nextStep && nextStep.start_location) {
+        const newLocation = { lat: nextStep.start_location.lat(), lng: nextStep.start_location.lng() };
+        setSimulatedLocation(newLocation);
+        if (map) {
+          map.setCenter(newLocation);
+        }
+      }
+    }
+  };
+
+  const handlePrevStep = () => {
+    if (currentStepIndex > 0) {
+      const prevStepIndex = currentStepIndex - 1;
+      setCurrentStepIndex(prevStepIndex);
+      const prevStep = navigationSteps[prevStepIndex];
+      if (prevStep && prevStep.start_location) {
+        const newLocation = { lat: prevStep.start_location.lat(), lng: prevStep.start_location.lng() };
+        setSimulatedLocation(newLocation);
+        if (map) {
+          map.setCenter(newLocation);
+        }
+      }
+    }
+  };
+
   return {
     isNavigating,
     currentStepIndex,
@@ -173,5 +219,8 @@ export const useNavigationState = ({ map, currentLocation, directionsResponse, n
     isDemoMode,
     handleStartNavigation,
     handleStopNavigation,
+    handleNextStep,
+    handlePrevStep,
+    simulatedLocation,
   };
 };

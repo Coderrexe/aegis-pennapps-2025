@@ -15,14 +15,13 @@ export const NavigationHeader: React.FC<NavigationHeaderProps> = ({ searchPanelO
             <svg className="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
-            <span className="text-sm md:text-base">Back</span>
           </Link>
-          <div className="h-4 md:h-6 w-px bg-[var(--neutral)]/50"></div>
+          <div className="h-4 md:h-6 w-px bg-transparent"></div>
           <h1 className="text-lg md:text-xl text-[var(--neutral)]">Aegis Navigation</h1>
         </div>
         <button
           onClick={() => setSearchPanelOpen(!searchPanelOpen)}
-          className="bg-[var(--primary)] hover:bg-opacity-80 cursor-pointer text-[var(--neutral)] px-3 md:px-4 py-2 rounded-lg transition-colors shadow-md text-sm md:text-base"
+          className="nav-link-style"
         >
           {searchPanelOpen ? 'Close' : 'Plan Route'}
         </button>

@@ -78,6 +78,9 @@ const Navigate: React.FC = () => {
     isDemoMode,
     handleStartNavigation,
     handleStopNavigation,
+    handleNextStep,
+    handlePrevStep,
+    simulatedLocation,
   } = useNavigationState({
     map,
     currentLocation,
@@ -109,7 +112,7 @@ const Navigate: React.FC = () => {
         onUnmount={onUnmount}
       >
         
-        <UserMarker currentLocation={currentLocation} isNavigating={isNavigating} userHeading={userHeading} />
+        <UserMarker currentLocation={simulatedLocation || currentLocation} isNavigating={isNavigating} userHeading={userHeading} />
 
         
         {directionsResponse && (
@@ -176,6 +179,8 @@ const Navigate: React.FC = () => {
         isNavigating={isNavigating}
         navigationSteps={navigationSteps}
         currentStepIndex={currentStepIndex}
+        handleNextStep={handleNextStep}
+        handlePrevStep={handlePrevStep}
         handleStopNavigation={handleStopNavigation}
         remainingDistance={remainingDistance}
         remainingTime={remainingTime}
