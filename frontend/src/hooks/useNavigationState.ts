@@ -69,7 +69,7 @@ export const useNavigationState = ({ map, currentLocation, directionsResponse, n
             }
           }
         },
-        (error) => {},
+        () => {},
         options
       );
     }
