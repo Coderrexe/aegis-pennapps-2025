@@ -8,7 +8,7 @@ interface StatusBarProps {
 
 export const StatusBar: React.FC<StatusBarProps> = ({ zoom, hasLocation, isLoading = false }) => {
   return (
-    <div className="absolute bottom-2 md:bottom-4 left-2 right-2 md:left-4 md:right-4 z-30">
+    <div className="absolute bottom-6 md:bottom-4 left-2 right-2 md:left-4 md:right-4 z-30">
       <div className="bg-[var(--base)]/95 backdrop-blur-sm rounded-lg shadow-lg border border-[var(--neutral)]/20 px-3 md:px-4 py-2 md:py-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2 md:space-x-3">

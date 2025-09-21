@@ -9,6 +9,13 @@
 }
 
 @layer utilities {
+  .nav-link-style {
+    @apply text-xs md:text-sm font-normal tracking-wide uppercase cursor-pointer transition-all;
+  }
+
+  .nav-link-style:hover {
+    @apply underline;
+  }
   .animation-delay-500 {
     animation-delay: 500ms;
   }
