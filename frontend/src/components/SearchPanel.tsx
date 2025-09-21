@@ -37,82 +37,81 @@ export const SearchPanel: React.FC<SearchPanelProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="absolute top-16 left-2 right-2 md:left-4 md:right-4 z-40 bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden max-h-[calc(100vh-5rem)] overflow-y-auto">
+    <div className="absolute top-18 left-3 w-11/12 max-w-2xl z-40 bg-[var(--base)] text-[var(--neutral)] rounded-xl shadow-2xl border border-[var(--neutral)]/20 overflow-hidden max-h-[calc(100vh-5rem)] overflow-y-auto">
       <div className="p-4 md:p-6">
-        <h2 className="text-lg md:text-xl font-bold text-gray-800 mb-4">Plan Your Safe Route</h2>
-        
+        <h2 className="text-lg md:text-xl font-bold text-[var(--neutral)] mb-4">Plan Your Safe Route</h2>
+  
         <div className="space-y-4">
-          {/* Start Location */}
-          <div className="relative">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              <span className="flex items-center">
-                <div className="w-3 h-3 rounded-full bg-green-500 mr-2"></div>
-                From
-              </span>
-            </label>
-            {isLoaded && (
-              <Autocomplete
-                onLoad={onStartAutocompleteLoad}
-                onPlaceChanged={onStartPlaceChanged}
-              >
-                <input
-                  type="text"
-                  value={startLocation}
-                  onChange={(e) => onStartLocationChange(e.target.value)}
-                  placeholder="Enter starting location"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
-                />
-              </Autocomplete>
-            )}
+          <div className="flex flex-col md:flex-row md:items-end gap-3 md:gap-4">
+            <div className="relative flex-1">
+              <label className="block text-sm font-medium text-[var(--neutral)] mb-2">
+                <span className="flex items-center">
+                  <div className="w-3 h-3 rounded-full bg-[var(--accent)] mr-2"></div>
+                  From
+                </span>
+              </label>
+              {isLoaded && (
+                <Autocomplete
+                  onLoad={onStartAutocompleteLoad}
+                  onPlaceChanged={onStartPlaceChanged}
+                >
+                  <input
+                    type="text"
+                    value={startLocation}
+                    onChange={(e) => onStartLocationChange(e.target.value)}
+                    placeholder="Enter starting location"
+                    className="w-full px-4 py-2 border border-[var(--neutral)]/50 rounded-lg focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent outline-none transition-all bg-[var(--base)] text-[var(--neutral)]"
+                  />
+                </Autocomplete>
+              )}
+            </div>
+            
+            <div className="relative flex-1">
+              <label className="block text-sm font-medium text-[var(--neutral)] mb-2">
+                <span className="flex items-center">
+                  <div className="w-3 h-3 rounded-full bg-[var(--accent)] mr-2"></div>
+                  To
+                </span>
+              </label>
+              {isLoaded && (
+                <Autocomplete
+                  onLoad={onEndAutocompleteLoad}
+                  onPlaceChanged={onEndPlaceChanged}
+                >
+                  <input
+                    type="text"
+                    value={endLocation}
+                    onChange={(e) => onEndLocationChange(e.target.value)}
+                    placeholder="Enter destination"
+                    className="w-full px-4 py-2 border border-[var(--neutral)]/50 rounded-lg focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent outline-none transition-all bg-[var(--base)] text-[var(--neutral)]"
+                  />
+                </Autocomplete>
+              )}
+            </div>
           </div>
 
-          {/* End Location */}
-          <div className="relative">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              <span className="flex items-center">
-                <div className="w-3 h-3 rounded-full bg-red-500 mr-2"></div>
-                To
-              </span>
-            </label>
-            {isLoaded && (
-              <Autocomplete
-                onLoad={onEndAutocompleteLoad}
-                onPlaceChanged={onEndPlaceChanged}
-              >
-                <input
-                  type="text"
-                  value={endLocation}
-                  onChange={(e) => onEndLocationChange(e.target.value)}
-                  placeholder="Enter destination"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
-                />
-              </Autocomplete>
-            )}
-          </div>
-
-          {/* Search Button */}
           <button
             onClick={onSearch}
             disabled={!startLocation || !endLocation || isCalculatingRoute}
-            className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white py-3 px-4 rounded-lg font-medium transition-colors shadow-md flex items-center justify-center space-x-2"
+            className="w-full bg-[var(--primary)] hover:bg-opacity-80 disabled:bg-[var(--neutral)]/50 disabled:cursor-not-allowed text-[var(--neutral)] py-3 px-4 rounded-lg font-medium transition-colors shadow-md flex items-center justify-center space-x-2"
           >
             {isCalculatingRoute && (
-              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              <div className="w-4 h-4 border-2 border-[var(--neutral)] border-t-transparent rounded-full animate-spin"></div>
             )}
             <span>{isCalculatingRoute ? 'Calculating Route...' : 'Find Safe Route'}</span>
           </button>
 
-          {/* Quick Actions */}
-          <div className="pt-2 border-t border-gray-200">
-            <p className="text-xs text-gray-500 mb-2">Quick actions:</p>
+          
+          <div className="pt-2 border-t border-[var(--neutral)]/20">
+            <p className="text-xs text-[var(--neutral)]/70 mb-2">Quick actions:</p>
             <div className="flex flex-wrap gap-2">
               <button 
                 onClick={onUseCurrentLocation}
                 disabled={!hasCurrentLocation}
                 className={`text-xs px-3 py-1 rounded-full transition-colors flex items-center space-x-1 ${
                   hasCurrentLocation 
-                    ? 'bg-blue-100 hover:bg-blue-200 text-blue-700 hover:shadow-sm' 
-                    : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                    ? 'bg-[var(--primary)]/10 hover:bg-[var(--primary)]/20 text-[var(--accent)] hover:shadow-sm' 
+                    : 'bg-[var(--neutral)]/20 text-[var(--neutral)]/50 cursor-not-allowed'
                 }`}
                 title={hasCurrentLocation ? 'Fill start location with your current address' : 'Location not available'}
               >
@@ -122,7 +121,7 @@ export const SearchPanel: React.FC<SearchPanelProps> = ({
                 </svg>
                 <span>Use current location</span>
               </button>
-              <button className="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded-full transition-colors">
+              <button className="text-xs bg-[var(--neutral)]/20 hover:bg-[var(--neutral)]/40 text-[var(--neutral)] px-3 py-1 rounded-full transition-colors">
                 Recent searches
               </button>
             </div>
