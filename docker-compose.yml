@@ -6,11 +6,12 @@ services:
       context: .
       dockerfile: backend/Dockerfile
     ports:
-      - "5001:5001"
+      - "5002:5002"
     volumes:
       - ./backend:/app/backend
-    # The command overrides the Dockerfile's CMD to enable --reload for development
-    command: ["python", "main.py"]
+    # The command overrides the Dockerfile's CMD.
+    # We use this to run the app as a module, which is necessary for the imports to work correctly.
+    command: ["python", "-m", "backend.app"]
 
   frontend:
     build: ./frontend

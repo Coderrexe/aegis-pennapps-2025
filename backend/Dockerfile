@@ -3,38 +3,28 @@ FROM python:3.9-slim
 # Set working directory
 WORKDIR /app
 
-# Install system dependencies
+# Install system dependencies required for compiling C++ extensions
 RUN apt-get update && apt-get install -y \
-    gcc \
-    g++ \
+    build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy the entire project
-COPY . .
+# Copy requirements and setup files first to leverage Docker layer caching
+COPY backend/requirements.txt setup.py ./
 
-# Install dependencies, including the Cython extension
-RUN pip install --no-cache-dir -r backend/requirements.txt
-RUN pip install .
+# Install build dependencies and then all other dependencies
+RUN pip install --no-cache-dir setuptools cython
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Set the working directory to the backend folder
-WORKDIR /app/backend
+# Copy the backend source code
+COPY backend/ backend/
 
-# Create non-root user and set permissions
-RUN useradd --create-home --shell /bin/bash app
+# Compile the Cython/C++ extension
+RUN python setup.py build_ext --inplace
 
-# Grant ownership to the app user
-RUN chown -R app:app /app
+# Expose the correct port for the Flask application
+EXPOSE 5002
 
-USER app
-
-# Expose port
-EXPOSE 8000
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:8000/ || exit 1
-
-# Run the application
-# For production, Gunicorn is used.
-# The command in docker-compose.yml will override this for development.
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "4", "main:app"]
+# Command to run the application
+# This will be overridden by docker-compose for local development,
+# but is good practice to have a default.
+CMD ["python", "-m", "backend.app"]

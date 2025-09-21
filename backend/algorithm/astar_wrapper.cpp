@@ -15,7 +15,7 @@
         ],
         "include_dirs": [
             "backend/algorithm",
-            "/Users/williamfeng/Documents/pennapps-2025/backend/algorithm"
+            "/Users/aryan/Desktop/pennapps-2025/backend/algorithm"
         ],
         "language": "c++",
         "name": "backend.algorithm.astar_solver",

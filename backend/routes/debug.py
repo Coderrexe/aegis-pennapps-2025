@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request
 import requests
-from utils.query_loader import load_sql_query
+from backend.utils.query_loader import load_sql_query
 
 debug_bp = Blueprint('debug_bp', __name__)
 

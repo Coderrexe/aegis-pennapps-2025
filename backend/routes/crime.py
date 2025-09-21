@@ -4,16 +4,16 @@ import io
 import csv
 from datetime import datetime, timedelta
 import requests
-from crime_data_service import CrimeDataService
+from backend.crime_data_service import CrimeDataService
 from datetime import datetime
-from utils.cache_manager import CacheManager
-from utils.rate_limiter import RateLimiter
-from utils.helpers import (
+from backend.utils.cache_manager import CacheManager
+from backend.utils.rate_limiter import RateLimiter
+from backend.utils.helpers import (
     _categorize_crime, _get_crime_severity, _calculate_minutes_ago,
     _get_crime_type_summary, _get_district_summary, _get_severity_breakdown,
     _get_hourly_pattern, _generate_real_time_alerts
 )
-from utils.query_loader import load_sql_query
+from backend.utils.query_loader import load_sql_query
 crime_bp = Blueprint('crime_bp', __name__)
 logger = logging.getLogger(__name__)
 crime_service = CrimeDataService()
