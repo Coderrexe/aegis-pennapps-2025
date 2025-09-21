@@ -87,7 +87,7 @@ export const NavigationUI: React.FC<NavigationUIProps> = ({
             </div>
             <div className="text-center">
               <div className="text-xs text-primary/80 mb-1">ETA</div>
-              <div className="text-lg text-[var(--accent)]">{remainingTime}</div>
+              <div className="text-lg text-[var(--accent)]">{remainingTime * 4}</div>
             </div>
           </div>
         </div>
