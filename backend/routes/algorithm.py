@@ -65,23 +65,53 @@ def create_circular_bounds(start_lat, start_lon, end_lat, end_lon, buffer_factor
         'direct_distance': direct_distance
     }
 
-def point_in_circle(lat, lon, circle_params):
-    """
-    Check if a point is inside the circular bounding region
+def point_in_circle(lat, lon, bounds):
+    """Check if a point is within the circular bounds"""
+    distance = haversine_distance(lat, lon, bounds['center_lat'], bounds['center_lon'])
+    return distance <= bounds['radius']
+
+def extract_path_coordinates(path_nodes, node_df):
+    """Extract lat/lon coordinates for a list of node indices"""
+    try:
+        # Get coordinates for the path nodes
+        coords = node_df.loc[path_nodes, ["lat", "lon"]]
+        # Convert to list of [lat, lon] pairs
+        coordinates = coords.values.tolist()
+        return coordinates
+    except Exception as e:
+        logger.error(f"Error extracting coordinates for path: {e}")
+        return []
+
+def process_algorithm_results(results, node_df):
+    """Process algorithm results to include coordinates for each path"""
+    processed_results = []
     
-    Args:
-        lat, lon: Point coordinates
-        circle_params: Circle parameters from create_circular_bounds
+    for path_result in results:
+        try:
+            # Extract the path nodes
+            path_nodes = path_result.get('path', [])
+            
+            # Get coordinates for all nodes in the path
+            path_coordinates = extract_path_coordinates(path_nodes, node_df)
+            
+            # Create enhanced result with coordinates
+            enhanced_result = {
+                'name': path_result.get('name', ''),
+                'path_nodes': path_nodes,
+                'path_coordinates': path_coordinates,
+                'time': path_result.get('time', 0),
+                'dark': path_result.get('dark', 0),
+                'path_length': len(path_nodes)
+            }
+            
+            processed_results.append(enhanced_result)
+            
+        except Exception as e:
+            logger.error(f"Error processing path result: {e}")
+            # Include original result if processing fails
+            processed_results.append(path_result)
     
-    Returns:
-        bool: True if point is inside circle
-    """
-    distance_to_center = haversine_distance(
-        lat, lon, 
-        circle_params['center_lat'], 
-        circle_params['center_lon']
-    )
-    return distance_to_center <= circle_params['radius']
+    return processed_results
 
 def haversine_distance(lat1, lon1, lat2, lon2):
     """Calculate the great circle distance between two points on the earth in meters"""
@@ -201,6 +231,12 @@ def find_path_from_coordinates():
             algo_data['t']
         )
         
+        # Get the node dataframe for coordinate extraction
+        node_df = load_osm_data()
+        
+        # Process results to include coordinates
+        processed_paths = process_algorithm_results(results, node_df)
+        
         return jsonify({
             'status': 'success',
             'start_node': {
@@ -217,7 +253,7 @@ def find_path_from_coordinates():
                 'N': algo_data['N'],
                 'M': algo_data['M']
             },
-            'paths': results
+            'paths': processed_paths
         })
         
     except Exception as e:
@@ -246,9 +282,15 @@ def run_astar_endpoint():
             data['t']
         )
 
+        # Get the node dataframe for coordinate extraction
+        node_df = load_osm_data()
+        
+        # Process results to include coordinates
+        processed_paths = process_algorithm_results(results, node_df)
+
         return jsonify({
             'status': 'success',
-            'results': results
+            'results': processed_paths
         })
 
     except (TypeError, ValueError) as e:
