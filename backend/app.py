@@ -24,7 +24,7 @@ app = Flask(__name__)
 
 # === CORS Setup ===
 def get_allowed_origins():
-    origins = ["http://localhost:3000"]
+    origins = ["http://localhost:3000", "https://aeg1s.vercel.app]
     ngrok_url = os.environ.get("NGROK_URL")
     if ngrok_url:
         origins.append(ngrok_url)
