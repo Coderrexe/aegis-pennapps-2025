@@ -2,15 +2,15 @@ import logging
 import pandas as pd
 import numpy as np
 from flask import Blueprint, jsonify, request
-from algorithm.astar_solver import run_astar_solver
+from backend.algorithm.astar_solver import run_astar_solver
 import os
 
 algorithm_bp = Blueprint('algorithm_bp', __name__)
 logger = logging.getLogger(__name__)
 
 # Load the OSM data once when the module is imported
-DATA_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data', 'OSM-NTL-CRIME_combined.csv')
-EDGES_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data', 'edges.csv')
+DATA_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'data', 'OSM-NTL-CRIME_combined.csv')
+EDGES_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'data', 'edges.csv')
 osm_data = None
 edges_data = None
 

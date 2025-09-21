@@ -17,7 +17,17 @@ export const useNavigationState = ({ map, currentLocation, directionsResponse, n
   const watchIdRef = useRef<number | null>(null);
   const lastLocationRef = useRef<google.maps.LatLng | null>(null);
   const [isDemoMode, setIsDemoMode] = useState(false);
+  const crimeCheckIntervalRef = useRef<number | null>(null);
   const [simulatedLocation, setSimulatedLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [locationForCrimeQuery, setLocationForCrimeQuery] = useState<{ lat: number; lng: number } | null>(null);
+
+  useEffect(() => {
+    if (simulatedLocation) {
+      setLocationForCrimeQuery(simulatedLocation);
+    } else if (currentLocation) {
+      setLocationForCrimeQuery(currentLocation);
+    }
+  }, [simulatedLocation, currentLocation]);
 
   useEffect(() => {
     if (isNavigating && navigationSteps.length > 0) {
@@ -141,6 +151,21 @@ export const useNavigationState = ({ map, currentLocation, directionsResponse, n
     }, 1000);
   }, [map, isNavigating]);
 
+  const checkNearbyCrimes = useCallback(async () => {
+    if (!locationForCrimeQuery) return;
+
+    try {
+      console.log(locationForCrimeQuery.lat, locationForCrimeQuery.lng);
+      const response = await fetch(`/api/crime/nearby?lat=${locationForCrimeQuery.lat}&lng=${locationForCrimeQuery.lng}&radius=1609&minutes=30`);
+      if (response.ok) {
+        const data = await response.json();
+        alert(`Crime data updated: ${data.total_incidents} incidents found in the last 30 minutes within a 9.99-mile radius.`);
+      }
+    } catch (error) {
+      console.error('Error checking for nearby crimes:', error);
+    }
+  }, [locationForCrimeQuery]);
+
   const handleStartNavigation = useCallback(() => {
     if (!currentLocation || !directionsResponse || !navigationSteps.length) {
       return;
@@ -163,6 +188,11 @@ export const useNavigationState = ({ map, currentLocation, directionsResponse, n
     startLocationTracking();
     startHeadingTracking();
     startDemoMode();
+
+    if (crimeCheckIntervalRef.current) {
+      clearInterval(crimeCheckIntervalRef.current);
+    }
+    crimeCheckIntervalRef.current = window.setInterval(checkNearbyCrimes, 5000);
   }, [currentLocation, directionsResponse, navigationSteps, map, startLocationTracking, startHeadingTracking, startDemoMode]);
 
   const handleStopNavigation = useCallback(() => {
@@ -177,6 +207,11 @@ export const useNavigationState = ({ map, currentLocation, directionsResponse, n
 
     stopLocationTracking();
     stopHeadingTracking();
+
+    if (crimeCheckIntervalRef.current) {
+      clearInterval(crimeCheckIntervalRef.current);
+      crimeCheckIntervalRef.current = null;
+    }
   }, [map, stopLocationTracking, stopHeadingTracking]);
 
   const handleNextStep = () => {
@@ -222,5 +257,6 @@ export const useNavigationState = ({ map, currentLocation, directionsResponse, n
     handleNextStep,
     handlePrevStep,
     simulatedLocation,
+    locationForCrimeQuery,
   };
 };

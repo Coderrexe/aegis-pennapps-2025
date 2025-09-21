@@ -20,8 +20,11 @@ RUN pip install .
 WORKDIR /app/backend
 
 # Create non-root user and set permissions
-RUN useradd --create-home --shell /bin/bash app \
-    && chown -R app:app /app
+RUN useradd --create-home --shell /bin/bash app
+
+# Grant ownership to the app user
+RUN chown -R app:app /app
+
 USER app
 
 # Expose port

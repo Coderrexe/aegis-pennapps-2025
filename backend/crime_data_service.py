@@ -5,11 +5,14 @@ import logging
 import math
 from geopy.distance import geodesic
 import os
+import pandas as pd
+import pytz
 
 logger = logging.getLogger(__name__)
 
 class CrimeDataService:
     def __init__(self):
+        self.local_crime_file = os.path.join(os.path.dirname(__file__), 'data', 'local_crimes.csv')
         self.philadelphia_api_base = os.getenv('PHILADELPHIA_API_BASE', 'https://phl.carto.com/api/v2/sql')
         self.fbi_api_base = os.getenv('FBI_API_BASE', 'https://api.usa.gov/crime/fbi/cde')
         self.severity_mapping = {
@@ -27,21 +30,31 @@ class CrimeDataService:
         }
 
     def get_nearby_crimes(self, lat: float, lng: float, radius: int = 1000,
-                         hours: int = 24, severity: Optional[str] = None) -> Dict[str, Any]:
+                         hours: int = 24, minutes: Optional[int] = None, severity: Optional[str] = None) -> Dict[str, Any]:
         try:
             end_time = datetime.now()
-            start_time = end_time - timedelta(hours=hours)
+            if minutes is not None:
+                start_time = end_time - timedelta(minutes=minutes)
+                time_window_display = f"{minutes} minutes"
+            else:
+                start_time = end_time - timedelta(hours=hours)
+                time_window_display = f"{hours} hours"
+
             philadelphia_crimes = self._get_philadelphia_crimes(lat, lng, radius, start_time, end_time)
             fbi_crimes = self._get_fbi_crimes(lat, lng, radius, start_time, end_time)
-            all_crimes = philadelphia_crimes + fbi_crimes
+            local_crimes = self._get_local_crimes(lat, lng, radius, start_time, end_time)
+            all_crimes = philadelphia_crimes + fbi_crimes + local_crimes
+
             if severity:
                 all_crimes = [crime for crime in all_crimes
                             if crime.get('severity', '').lower() == severity.lower()]
+
             risk_score = self._calculate_risk_score(all_crimes, radius)
+
             return {
                 'location': {'lat': lat, 'lng': lng},
                 'radius_meters': radius,
-                'time_window_hours': hours,
+                'time_window': time_window_display,
                 'total_incidents': len(all_crimes),
                 'risk_score': risk_score,
                 'risk_level': self._get_risk_level(risk_score),
@@ -137,6 +150,61 @@ class CrimeDataService:
             return []
         except Exception as e:
             logger.error(f"Error fetching FBI crimes: {str(e)}")
+            return []
+
+    def _get_local_crimes(self, lat: float, lng: float, radius: int,
+                          start_time: datetime, end_time: datetime) -> List[Dict]:
+        if not os.path.exists(self.local_crime_file):
+            logger.warning(f"Local crime file not found at: {self.local_crime_file}")
+            return []
+        try:
+            logger.info(f"--- Debugging _get_local_crimes ---")
+            logger.info(f"Querying with start_time: {start_time}, end_time: {end_time}")
+
+            df = pd.read_csv(self.local_crime_file)
+            if df.empty:
+                logger.info("Local crime file is empty.")
+                return []
+
+            logger.info(f"Loaded {len(df)} rows from {self.local_crime_file}")
+            
+            # Make datetime column timezone-aware (UTC)
+            df['datetime'] = pd.to_datetime(df['datetime']).dt.tz_localize('UTC')
+            start_time_utc = start_time.astimezone(pytz.utc)
+            end_time_utc = end_time.astimezone(pytz.utc)
+
+            logger.info(f"Converted query times to UTC. start_time: {start_time_utc}, end_time: {end_time_utc}")
+
+            # Filter by time
+            time_filtered_df = df[(df['datetime'] >= start_time_utc) & (df['datetime'] <= end_time_utc)].copy()
+            logger.info(f"{len(time_filtered_df)} rows remaining after time filter.")
+
+            crimes = []
+            for index, row in time_filtered_df.iterrows():
+                crime_lat = row['lat']
+                crime_lng = row['lng']
+                distance = geodesic((lat, lng), (crime_lat, crime_lng)).meters
+                logger.info(f"Checking crime ID {row['id']} at ({crime_lat}, {crime_lng}). Distance: {distance:.2f}m. Radius limit: {radius}m.")
+
+                if distance <= radius:
+                    logger.info(f"Crime ID {row['id']} is within radius. Adding to results.")
+                    crimes.append({
+                        'id': f"local_{row['id']}",
+                        'type': row['type'],
+                        'severity': row['severity'],
+                        'location': {
+                            'lat': crime_lat,
+                            'lng': crime_lng,
+                            'address': 'N/A'
+                        },
+                        'datetime': row['datetime'].isoformat(),
+                        'distance_meters': round(distance, 2),
+                        'source': 'Local'
+                    })
+            logger.info(f"--- End Debugging ---: Found {len(crimes)} local crimes.")
+            return crimes
+        except Exception as e:
+            logger.error(f"Error reading local crime file: {e}", exc_info=True)
             return []
 
     def analyze_route_safety(self, waypoints: List[Dict], buffer_meters: int = 500,

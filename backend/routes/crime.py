@@ -5,6 +5,7 @@ import csv
 from datetime import datetime, timedelta
 import requests
 from crime_data_service import CrimeDataService
+from datetime import datetime
 from utils.cache_manager import CacheManager
 from utils.rate_limiter import RateLimiter
 from utils.helpers import (
@@ -31,18 +32,19 @@ def get_nearby_crimes():
             return jsonify({'error': 'Missing required parameters: lat and lng'}), 400
         radius = request.args.get('radius', default=1000, type=int)
         hours = request.args.get('hours', default=24, type=int)
+        minutes = request.args.get('minutes', type=int)
         severity = request.args.get('severity', type=str)
         if not (-90 <= lat <= 90) or not (-180 <= lng <= 180):
             return jsonify({'error': 'Invalid coordinates'}), 400
         if radius > 10000:
             return jsonify({'error': 'Radius too large (max 10000m)'}), 400
-        cache_key = f"crimes_{lat}_{lng}_{radius}_{hours}_{severity}"
+        cache_key = f"crimes_{lat}_{lng}_{radius}_{hours}_{minutes}_{severity}"
         cached_result = cache_manager.get(cache_key)
         if cached_result:
             logger.info(f"Cache hit for location ({lat}, {lng})")
             return jsonify(cached_result)
         crime_data = crime_service.get_nearby_crimes(
-            lat=lat, lng=lng, radius=radius, hours=hours, severity=severity
+            lat=lat, lng=lng, radius=radius, hours=hours, minutes=minutes, severity=severity
         )
         cache_manager.set(cache_key, crime_data)
         logger.info(f"Fetched {len(crime_data.get('incidents', []))} crimes for ({lat}, {lng})")
