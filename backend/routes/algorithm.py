@@ -2,7 +2,7 @@ import logging
 import pandas as pd
 import numpy as np
 from flask import Blueprint, jsonify, request
-from backend.algorithm.astar_solver import run_astar_solver
+from algorithm.astar_solver import run_astar_solver
 import os
 
 algorithm_bp = Blueprint('algorithm_bp', __name__)

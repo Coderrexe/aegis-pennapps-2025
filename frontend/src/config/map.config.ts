@@ -20,7 +20,7 @@ export const mapOptions = {
   rotateControl: false,
   fullscreenControl: false,
   styles: [
-    { elementType: "geometry", stylers: [{ color: "#020202" }] },
+    { elementType: "geometry", stylers: [{ color: "#1a1a1a" }] }, // Dark theme but not pure black
     { elementType: "labels.text.stroke", stylers: [{ color: "#020202" }] },
     { elementType: "labels.text.fill", stylers: [{ color: "#746855" }] },
     {

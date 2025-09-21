@@ -5,7 +5,7 @@
   "scripts": {
     "start": "concurrently --names \"BACKEND,FRONTEND\" --prefix-colors \"blue,green\" \"npm:start:backend\" \"npm:start:frontend\"",
     "dev": "npm start",
-    "start:backend": "cd backend && python3 main.py",
+    "start:backend": "cd backend && source venv/bin/activate && python3 main.py",
     "start:frontend": "npm run dev --prefix frontend",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

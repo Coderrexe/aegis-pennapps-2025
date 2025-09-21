@@ -4,11 +4,9 @@ import { useGeolocation } from '../../hooks/useGeolocation';
 import { useMapControls } from '../../hooks/useMapControls';
 import { useRouteSearch } from '../../hooks/useRouteSearch';
 import { useNavigationState } from '../../hooks/useNavigationState';
-import { useCrimeDataFixed as useCrimeData } from '../../hooks/useCrimeDataFixed';
 import { MapControls } from '../../components/MapControls';
 import { SearchPanel } from '../../components/SearchPanel';
 import { StatusBar } from '../../components/StatusBar';
-import { CrimeInfoPanel } from '../../components/CrimeInfoPanel';
 import { NavigationHeader } from './NavigationHeader';
 import { NavigationUI } from './NavigationUI';
 import { RouteDetails } from './RouteDetails';
@@ -17,8 +15,7 @@ import { LoadingSpinner } from './LoadingSpinner';
 import { ErrorDisplay } from './ErrorDisplay';
 import { libraries, containerStyle, defaultCenter, mapOptions } from '../../config/map.config';
 
-
-const Navigate: React.FC = () => {
+const NavigateSimple: React.FC = () => {
   const { isLoaded, loadError } = useJsApiLoader({
     id: 'google-map-script',
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
@@ -37,15 +34,14 @@ const Navigate: React.FC = () => {
 
   type RoutePreference = 'fastest' | 'lighting' | 'balanced';
   const [routePreference, setRoutePreference] = useState<RoutePreference>('balanced');
-  
-  
 
   const onLoad = useCallback((mapInstance: google.maps.Map) => {
-    console.log('✅ Map loaded successfully:', mapInstance);
+    console.log('Map loaded successfully');
     setMap(mapInstance);
   }, []);
 
   const onUnmount = useCallback(() => {
+    console.log('Map unmounted');
     setMap(null);
   }, []);
 
@@ -97,21 +93,7 @@ const Navigate: React.FC = () => {
     setZoom,
   });
 
-  // Crime visualization feature - can be disabled if it causes issues
-  const enableCrimeVisualization = true; // Re-enabled with all fixes
-  
-  const { 
-    crimeData, 
-    isLoading: crimeLoading, 
-    error: crimeError, 
-    crimeOverlays 
-  } = useCrimeData({
-    isNavigating: isNavigating && enableCrimeVisualization,
-    currentLocation: simulatedLocation || currentLocation,
-    map,
-  });
-
-
+  console.log('Navigation state:', { isNavigating, hasMap: !!map, hasLocation: !!currentLocation });
 
   if (loadError) {
     return <ErrorDisplay />;
@@ -136,13 +118,13 @@ const Navigate: React.FC = () => {
           <DirectionsRenderer
             directions={directionsResponse}
             options={{
-              suppressMarkers: isNavigating, // Hide default markers during navigation
+              suppressMarkers: isNavigating,
               polylineOptions: {
-                strokeColor: isNavigating ? '#ff4444' : '#011F5B', // Red during navigation
+                strokeColor: isNavigating ? '#990000' : '#011F5B',
                 strokeWeight: isNavigating ? 8 : 6,
                 strokeOpacity: 0.8,
               },
-              markerOptions: isNavigating ? undefined : {
+              markerOptions: {
                 icon: {
                   url: 'data:image/svg+xml;base64,' + btoa(`
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -192,37 +174,6 @@ const Navigate: React.FC = () => {
       />
 
       
-      {/* Simplified navigation indicator */}
-      {isNavigating && (
-        <div className="absolute top-4 left-4 bg-green-500 text-white p-2 rounded-lg shadow-lg z-50">
-          <div className="text-sm font-bold">🧭 Navigation Active</div>
-          <div className="text-xs">
-            {crimeOverlays > 0 ? `${crimeOverlays} crime areas displayed` : 
-             crimeLoading ? 'Loading crime data...' : 
-             'Crime data ready'}
-          </div>
-        </div>
-      )}
-
-      {/* Debug info when NOT navigating */}
-      {!isNavigating && directionsResponse && (
-        <div className="absolute top-4 left-4 bg-blue-500 text-white p-2 rounded shadow z-50">
-          <div className="text-xs">Route calculated - Ready to navigate</div>
-        </div>
-      )}
-
-      {/* Crime info panel - optional overlay that doesn't interfere with navigation */}
-      {isNavigating && enableCrimeVisualization && (
-        <CrimeInfoPanel
-          crimeData={crimeData}
-          isLoading={crimeLoading}
-          error={crimeError}
-          isNavigating={isNavigating}
-          overlayCount={crimeOverlays}
-        />
-      )}
-
-      
       <NavigationUI
         isNavigating={isNavigating}
         navigationSteps={navigationSteps}
@@ -255,8 +206,15 @@ const Navigate: React.FC = () => {
         hasLocation={!!currentLocation}
         isLoading={locationLoading}
       />
+
+      {/* Debug info */}
+      {isNavigating && (
+        <div className="absolute top-4 left-4 bg-black/80 text-white p-2 rounded text-xs">
+          Navigation Active - Map: {map ? 'OK' : 'NULL'} - Location: {currentLocation ? 'OK' : 'NULL'}
+        </div>
+      )}
     </div>
   ) : <LoadingSpinner />;
 };
 
-export default React.memo(Navigate);
+export default React.memo(NavigateSimple);

@@ -151,26 +151,15 @@ export const useNavigationState = ({ map, currentLocation, directionsResponse, n
     }, 1000);
   }, [map, isNavigating]);
 
-  const checkNearbyCrimes = useCallback(async () => {
-    if (!locationForCrimeQuery) return;
-
-    try {
-      console.log(locationForCrimeQuery.lat, locationForCrimeQuery.lng);
-      const response = await fetch(`/api/crime/nearby?lat=${locationForCrimeQuery.lat}&lng=${locationForCrimeQuery.lng}&radius=1609&minutes=30`);
-      if (response.ok) {
-        const data = await response.json();
-        alert(`Crime data updated: ${data.total_incidents} incidents found in the last 30 minutes within a 9.99-mile radius.`);
-      }
-    } catch (error) {
-      console.error('Error checking for nearby crimes:', error);
-    }
-  }, [locationForCrimeQuery]);
+  // Crime checking is now handled by the useCrimeData hook
 
   const handleStartNavigation = useCallback(() => {
     if (!currentLocation || !directionsResponse || !navigationSteps.length) {
+      console.log('❌ Cannot start navigation - missing requirements');
       return;
     }
 
+    console.log('🚀 Navigation started');
     setIsNavigating(true);
     setCurrentStepIndex(0);
 
@@ -185,15 +174,16 @@ export const useNavigationState = ({ map, currentLocation, directionsResponse, n
     }
     setSimulatedLocation(currentLocation);
 
-    startLocationTracking();
-    startHeadingTracking();
-    startDemoMode();
+    // startLocationTracking(); // Disabled to debug map disappearing
+    // startHeadingTracking(); // Disabled to debug map disappearing
+    // startDemoMode(); // Temporarily disabled to debug black screen
 
+    // Disable the old crime checking interval - now handled by useCrimeData hook
     if (crimeCheckIntervalRef.current) {
       clearInterval(crimeCheckIntervalRef.current);
     }
-    crimeCheckIntervalRef.current = window.setInterval(checkNearbyCrimes, 5000);
-  }, [currentLocation, directionsResponse, navigationSteps, map, startLocationTracking, startHeadingTracking, startDemoMode]);
+    // crimeCheckIntervalRef.current = window.setInterval(checkNearbyCrimes, 5000);
+  }, [currentLocation, directionsResponse, navigationSteps, map]);
 
   const handleStopNavigation = useCallback(() => {
     setIsNavigating(false);
@@ -205,14 +195,14 @@ export const useNavigationState = ({ map, currentLocation, directionsResponse, n
       map.setHeading(0);
     }
 
-    stopLocationTracking();
-    stopHeadingTracking();
+    // stopLocationTracking(); // Disabled since we're not starting them
+    // stopHeadingTracking(); // Disabled since we're not starting them
 
     if (crimeCheckIntervalRef.current) {
       clearInterval(crimeCheckIntervalRef.current);
       crimeCheckIntervalRef.current = null;
     }
-  }, [map, stopLocationTracking, stopHeadingTracking]);
+  }, [map]);
 
   const handleNextStep = () => {
     if (currentStepIndex < navigationSteps.length - 1) {
