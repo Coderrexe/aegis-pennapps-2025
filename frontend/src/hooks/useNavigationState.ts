@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { fetchWithHeaders } from '../utils/api';
+import apiClient from '../utils/api';
 
 interface UseNavigationStateProps {
   map: google.maps.Map | null;
@@ -161,15 +161,10 @@ export const useNavigationState = ({ map, currentLocation, directionsResponse, s
 
     try {
       console.log(locationForCrimeQuery.lat, locationForCrimeQuery.lng);
-      const response = await fetchWithHeaders(`/api/crime/nearby?lat=${locationForCrimeQuery.lat}&lng=${locationForCrimeQuery.lng}&radius=1609&minutes=30`);
-      if (response.ok) {
-        const data = await response.json();
-        if (data.total_incidents > 0) {
-          // For simplicity, we'll just show the first incident in the modal.
-          // In a real app, you might want to find the most severe or closest one.
-          const mostRelevantCrime = data.incidents[0];
-          setDetectedCrime(mostRelevantCrime);
-        }
+      const response = await apiClient.get(`/api/crime/nearby?lat=${locationForCrimeQuery.lat}&lng=${locationForCrimeQuery.lng}&radius=1609&minutes=30`);
+      if (response.data && response.data.total_incidents > 0) {
+        const mostRelevantCrime = response.data.incidents[0];
+        setDetectedCrime(mostRelevantCrime);
       }
     } catch (error) {
       console.error('Error checking for nearby crimes:', error);
@@ -182,28 +177,21 @@ export const useNavigationState = ({ map, currentLocation, directionsResponse, s
     const destination = directionsResponse.routes[0].legs[0].end_location;
 
     try {
-      const response = await fetchWithHeaders('/api/algorithm/astar', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      const response = await apiClient.post('/api/algorithm/run-astar', {
+        origin: {
+          lat: locationForCrimeQuery.lat,
+          lng: locationForCrimeQuery.lng,
         },
-        body: JSON.stringify({
-          origin: {
-            lat: locationForCrimeQuery.lat,
-            lng: locationForCrimeQuery.lng,
-          },
-          destination: {
-            lat: destination.lat(),
-            lng: destination.lng(),
-          },
-          preference: 'safety',
-        }),
+        destination: {
+          lat: destination.lat(),
+          lng: destination.lng(),
+        },
+        preference: 'safety',
       });
 
-      if (response.ok) {
-        const newDirections = await response.json();
-        console.log('New directions from API:', newDirections);
-        setDirectionsResponse(newDirections);
+      if (response.data) {
+        console.log('New directions from API:', response.data);
+        setDirectionsResponse(response.data);
         setDetectedCrime(null);
       } else {
         console.error('Failed to get a safer route');

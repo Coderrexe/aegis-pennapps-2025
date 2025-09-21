@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { formatTimeAgo } from '../../utils/time';
 
 // Assuming a basic crime data structure. Adjust as needed.
 interface Crime {
@@ -9,6 +10,7 @@ interface Crime {
     lat: number;
     lng: number;
   };
+  datetime: string;
 }
 
 interface CrimeDetectedModalProps {
@@ -22,6 +24,7 @@ export const CrimeDetectedModal: React.FC<CrimeDetectedModalProps> = ({ crime, o
   const [progress, setProgress] = useState(100);
   const [placeName, setPlaceName] = useState<string | null>(null);
   const [distance, setDistance] = useState<string | null>(null);
+  const [timeAgo, setTimeAgo] = useState<string | null>(null);
   const playedSoundForCrimeIdRef = useRef<number | string | null>(null);
 
   useEffect(() => {
@@ -66,6 +69,10 @@ export const CrimeDetectedModal: React.FC<CrimeDetectedModalProps> = ({ crime, o
       const distanceInMiles = distanceInMeters * 0.000621371;
       setDistance(`${distanceInMiles.toFixed(2)} mi away`);
     }
+
+    if (crime) {
+      setTimeAgo(formatTimeAgo(crime.datetime));
+    }
   }, [crime, currentUserLocation]);
 
   if (!crime) {
@@ -92,7 +99,7 @@ export const CrimeDetectedModal: React.FC<CrimeDetectedModalProps> = ({ crime, o
           <p className="text-sm text-neutral/80">A <span className="font-bold text-accent">{crime.severity}-severity</span> crime (<span className="font-bold text-accent">{crime.type}</span>) was reported near your location. A safer route is available.</p>
           <p className="text-xs text-neutral/60 mt-1">
             {placeName ? placeName : `Lat: ${crime.location.lat.toFixed(4)}, Lng: ${crime.location.lng.toFixed(4)}`}
-            {distance && <span className="text-accent font-semibold"> ({distance})</span>}
+            {distance && <span className="text-accent font-semibold"> ({distance} • {timeAgo})</span>}
           </p>
         </div>
 

@@ -1,5 +1,4 @@
 import { useState, useRef, useCallback } from 'react';
-import { fetchWithHeaders } from '../utils/api';
 
 interface UseRouteSearchProps {
   map: google.maps.Map | null;
@@ -52,26 +51,16 @@ export const useRouteSearch = ({
     setIsCalculatingRoute(true);
 
     try {
-      const response = await fetchWithHeaders('/api/algorithm/astar', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          origin: startLocation,
-          destination: endLocation,
-          preference: 'fastest', // or 'safety', 'balanced'
-        }),
+      const directionsService = new google.maps.DirectionsService();
+      const results = await directionsService.route({
+        origin: startLocation,
+        destination: endLocation,
+        travelMode: google.maps.TravelMode.DRIVING,
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to fetch route');
-      }
+      setDirectionsResponse(results);
 
-      const result = await response.json();
-      setDirectionsResponse(result);
-
-      const route = result.routes[0];
+      const route = results.routes[0];
       const leg = route.legs[0];
 
       const routeData = {

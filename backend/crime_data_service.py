@@ -32,7 +32,7 @@ class CrimeDataService:
     def get_nearby_crimes(self, lat: float, lng: float, radius: int = 1000,
                          hours: int = 24, minutes: Optional[int] = None, severity: Optional[str] = None) -> Dict[str, Any]:
         try:
-            end_time = datetime.now()
+            end_time = datetime.now(pytz.utc)
             if minutes is not None:
                 start_time = end_time - timedelta(minutes=minutes)
                 time_window_display = f"{minutes} minutes"
