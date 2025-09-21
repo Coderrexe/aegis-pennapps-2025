@@ -105,20 +105,6 @@ export const CrimeDetectedModal: React.FC<CrimeDetectedModalProps> = ({ crime, o
           </p>
         </div>
 
-        <div>
-          {alternateRoute && (
-            <div className="grid grid-cols-2 gap-2 text-center mt-2 text-xs">
-              <div className="bg-white/5 p-2 rounded-md">
-                <p className="text-neutral/70">Added Time</p>
-                <p className="text-accent font-semibold">~{alternateRoute.addedTime} min</p>
-              </div>
-              <div className="bg-white/5 p-2 rounded-md">
-                <p className="text-neutral/70">Safety Increase</p>
-                <p className="text-green-400 font-semibold">+15%</p>
-              </div>
-            </div>
-          )}
-        </div>
         <button 
           onClick={alternateRoute ? onSelectSaferRoute : onSwitchPath} 
           className="w-full px-4 py-3 bg-secondary text-base-content font-semibold rounded-md hover:bg-opacity-80 transition-colors disabled:opacity-50 cursor-pointer hover:bg-white/10 active:bg-white/20"
