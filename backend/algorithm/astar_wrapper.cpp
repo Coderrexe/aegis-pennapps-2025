@@ -15,7 +15,7 @@
         ],
         "include_dirs": [
             "backend/algorithm",
-            "/Users/aryan/Desktop/pennapps-2025/backend/algorithm"
+            "/Users/simbashi/Library/CloudStorage/OneDrive-Personal/Coding Projects/Aegis PennApps/backend/algorithm"
         ],
         "language": "c++",
         "name": "backend.algorithm.astar_solver",

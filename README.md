@@ -1,12 +1,60 @@
-# PennApps 2025 Project
+<p align="center">
+  <a href="#">
+     
+  </a>
+  <p align="center">
+   <img width="125" src="images/logo.png" alt="Logo">
+  </p>
+  <h1 align="center"><b>Aegis</b></h1>
+  <p align="center">
+  Real-time intelligence for safer streets.
+  <br/>
+  <i>PennApps Track Winner 2025 (Best Use of Statistics)</i>
+    <br />
+    <a href="https://aeg1s.vercel.app/"><strong>Try It Out!</strong></a>
+    <br/>
+    <a href="https://devpost.com/software/aegis-lxtqi3"><strong>Watch Video Demo</strong></a>
+    <br />
+    <br />
+    <b>Available for </b>
+    Web & Mobile
+  </p>
+</p>
+A pedestrian-first safe GPS powered by real-time police reports and NASA satellite light data.
+<br/>
+<br/>
 
-This project contains a React frontend and a Python Flask backend.
+![](images/app1.png)
+
+<div style="display: flex; justify-content: space-between; gap: 10px; width: 100%;">
+  <img style="width: 32%;" src="images/app3.png" alt="Feature" />
+  <img style="width: 32%;" src="images/app2.png" alt="Feature" />
+  <img style="width: 32%;" src="images/app4.png" alt="Feature" />
+</div>
+
+## Tech Stack
+
+- **Frontend**: React 19, TypeScript, Vite
+- **Styling**: TailwindCSS 4 with custom design system
+- **Mapping**: Google Maps API (@react-google-maps/api, @vis.gl/react-google-maps), Leaflet with React-Leaflet
+- **Icons**: React Icons
+- **Routing**: React Router DOM
+- **Backend**: Flask 3.0 with Python 3.12
+- **API Communication**: Axios
+- **Data Processing**: Pandas, GeoPy for geospatial calculations
+- **Caching**: Redis
+- **Task Scheduling**: APScheduler
+- **Algorithm**: Custom multi-objective A\* pathfinding (C++17 with Cython bindings)
+- **Data Sources**: Philadelphia Crime API, FBI Crime Data API, NASA satellite light data
+- **Containerization**: Docker & Docker Compose
+- **Deployment**: Vercel (frontend), Gunicorn (backend)
 
 ## Running Locally (Recommended)
 
 ### Prerequisites
 
 Before you begin, ensure you have the following installed:
+
 - [Node.js](https://nodejs.org/) (which includes npm)
 - [Python 3](https://www.python.org/downloads/)
 
@@ -14,23 +62,27 @@ Before you begin, ensure you have the following installed:
 
 1.  **Install root dependencies**:
     This will install `concurrently` which is used to run both servers at the same time.
+
     ```bash
     npm install
     ```
 
 2.  **Install frontend dependencies**:
+
     ```bash
     npm install --prefix frontend
     ```
 
 3.  **Set up the backend environment**:
     Create a Python virtual environment for the backend.
+
     ```bash
     python3 -m venv backend/venv
     ```
 
 4.  **Install backend dependencies**:
     Install the required Python packages into the virtual environment.
+
     ```bash
     backend/venv/bin/pip install -r backend/requirements.txt
     ```
@@ -52,6 +104,7 @@ npm run dev
 ```
 
 This will:
+
 - Start the Flask backend server on `http://localhost:5002`.
 - Start the React frontend development server (usually on `http://localhost:3000`).
 
@@ -66,6 +119,7 @@ This workflow allows you to test a deployed frontend (e.g., on Vercel) with your
 ### Prerequisites
 
 - [ngrok](https://ngrok.com/docs/getting-started) installed and configured.
+
   ```bash
   # Install ngrok (on macOS with Homebrew)
   brew install ngrok
@@ -89,8 +143,8 @@ This starts your backend and creates a secure tunnel using ngrok. Look for the p
 1. Go to your project's dashboard on Vercel.
 2. Go to **Settings > Environment Variables**.
 3. Add a new variable:
-    - **Name**: `VITE_PRODUCTION_API_URL`
-    - **Value**: Paste the `ngrok` URL you copied.
+   - **Name**: `VITE_PRODUCTION_API_URL`
+   - **Value**: Paste the `ngrok` URL you copied.
 4. Save and redeploy your Vercel project.
 
 Your deployed frontend will now send API requests to your local backend server.
@@ -110,9 +164,11 @@ This method uses Docker to run the application in isolated containers. It's usef
 
 1.  **Build and start the containers**:
     From the root directory, run:
+
     ```bash
     docker-compose up --build
     ```
+
     This command will build the Docker images for both the frontend and backend and then start the services.
 
 2.  **Access the application**:
